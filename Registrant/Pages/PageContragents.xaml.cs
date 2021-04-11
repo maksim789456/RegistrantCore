@@ -1,33 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-
+using Registrant.DB;
 
 namespace Registrant.Pages
 {
-    /// <summary>
-    /// Логика взаимодействия для PageContragents.xaml
-    /// </summary>
-    public partial class PageContragents : Page
+    public partial class PageContragents
     {
         public PageContragents()
         {
             InitializeComponent();
             FirstLoad();
 
-            Thread thread = new Thread(new ThreadStart(RefreshThread));
+            Thread thread = new Thread(RefreshThread);
             thread.Start();
         }
 
@@ -41,16 +28,17 @@ namespace Registrant.Pages
                 Thread.Sleep(Settings.App.Default.RefreshContent);
                 try
                 {
-                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                    using (RegistrantCoreContext ef = new RegistrantCoreContext())
                     {
-                        var temp = ef.Contragents.Where(x => x.Active != "0").OrderByDescending(x => x.IdContragent).ToList();
-                        Dispatcher.Invoke(() => DataGrid_Contragents.ItemsSource = temp);
+                        var contragents = ef.Contragents.Where(x => x.Active != "0")
+                            .OrderByDescending(x => x.IdContragent);
+                        Dispatcher.Invoke(() => DataGrid_Contragents.ItemsSource = contragents);
                         Dispatcher.Invoke(() => DataGrid_Contragents.Items.Refresh());
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Упс.. Что-то пошло не так\n\nВозможно произошел разрыв соединения с сервером\n\nОтладочная информация\n" + ex.ToString(), "Ошибка при выполнении кода", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Упс.. Что-то пошло не так\n\nВозможно произошел разрыв соединения с сервером\n\nОтладочная информация\n" + ex.Message, "Ошибка при выполнении кода", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -62,15 +50,17 @@ namespace Registrant.Pages
         {
             try
             {
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                using (RegistrantCoreContext ef = new RegistrantCoreContext())
                 {
-                    var temp = ef.Contragents.Where(x => x.Active != "0").OrderByDescending(x => x.IdContragent).ToList();
-                    DataGrid_Contragents.ItemsSource = temp;
+                    var contragents = ef.Contragents
+                        .Where(x => x.Active != "0")
+                        .OrderByDescending(x => x.IdContragent);
+                    DataGrid_Contragents.ItemsSource = contragents;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Упс.. Что-то пошло не так\n\nВозможно произошел разрыв соединения с сервером\n\nОтладочная информация\n"+ ex.ToString(), "Ошибка при выполнении кода", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Упс.. Что-то пошло не так\n\nВозможно произошел разрыв соединения с сервером\n\nОтладочная информация\n"+ ex.Message, "Ошибка при выполнении кода", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -92,16 +82,19 @@ namespace Registrant.Pages
         private void btn_edit_Click(object sender, RoutedEventArgs e)
         {
             var bt = e.OriginalSource as Button;
-            var current = bt.DataContext as DB.Contragent;
+            var current = bt?.DataContext as Contragent;
 
             if (current != null)
             {
-                text_editnamecontragent.Text = "Редактирование элемента " + current.Name;
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                text_editnamecontragent.Text = $"Редактирование элемента {current.Name}";
+                using (RegistrantCoreContext ef = new RegistrantCoreContext())
                 {
-                    var temp = ef.Contragents.FirstOrDefault(x => x.IdContragent == current.IdContragent);
-                    tb_idcontragent.Text = temp.IdContragent.ToString();
-                    tb_edit_name.Text = temp.Name.ToString();
+                    var contragent = ef.Contragents.FirstOrDefault(x => x.IdContragent == current.IdContragent);
+                    if (contragent != null)
+                    {
+                        tb_idcontragent.Text = contragent.IdContragent.ToString();
+                        tb_edit_name.Text = contragent.Name.ToString();
+                    }
                     ContentEdit.ShowAsync();
                 }
             }
@@ -111,24 +104,26 @@ namespace Registrant.Pages
         private void btn_delete_Click(object sender, RoutedEventArgs e)
         {
             var bt = e.OriginalSource as Button;
-            var current = bt.DataContext as DB.Contragent;
+            var current = bt?.DataContext as Contragent;
 
             try
             {
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                using (RegistrantCoreContext ef = new RegistrantCoreContext())
                 {
-                    var temp = ef.Contragents.FirstOrDefault(x => x.IdContragent == current.IdContragent);
-                    temp.Active = "0";
-                    temp.ServiceInfo = temp.ServiceInfo + "\n" + DateTime.Now + " " + App.ActiveUser + " изменил удалил";
+                    var contragent = ef.Contragents.FirstOrDefault(x => x.IdContragent == current.IdContragent);
+                    if (contragent != null)
+                    {
+                        contragent.Active = "0";
+                        contragent.ServiceInfo = $"{contragent.ServiceInfo}\n{DateTime.Now} {App.ActiveUser} изменил удалил";
+                    }
                     ef.SaveChanges();
                     btn_refresh_Click(sender, e);
 
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                MessageBox.Show("Упс.. Что-то пошло не так\n\nВозможно произошел разрыв соединения с сервером\n\nОтладочная информация\n"+ ex.Message, "Ошибка при выполнении кода", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -137,26 +132,26 @@ namespace Registrant.Pages
         {
             try
             {
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                using (RegistrantCoreContext ef = new RegistrantCoreContext())
                 {
-                    var temp = ef.Contragents.Where(x => x.Active != "0").OrderByDescending(x => x.IdContragent).ToList();
+                    var contragents = ef.Contragents
+                        .Where(x => x.Active != "0")
+                        .OrderByDescending(x => x.IdContragent);
                     DataGrid_Contragents.ItemsSource = null;
-                    DataGrid_Contragents.ItemsSource = temp;
+                    DataGrid_Contragents.ItemsSource = contragents;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Упс.. Что-то пошло не так\n\nВозможно произошел разрыв соединения с сервером\n\nОтладочная информация\n" + ex.ToString(), "Ошибка при выполнении кода", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Упс.. Что-то пошло не так\n\nВозможно произошел разрыв соединения с сервером\n\nОтладочная информация\n" + ex.Message, "Ошибка при выполнении кода", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
         }
 
         //Добавить контрагента, диалог окно
         private void btn_addcontragent_Click(object sender, RoutedEventArgs e)
         {
             ContentAdd.ShowAsync();
-            tb_namecontragent.Text = null;
-
+            tb_namecontragent.Text = "";
         }
 
         /// <summary>
@@ -168,22 +163,23 @@ namespace Registrant.Pages
         {
             try
             {
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                using (RegistrantCoreContext ef = new RegistrantCoreContext())
                 {
-                    DB.Contragent contragent = new DB.Contragent();
-                    contragent.Name = tb_namecontragent.Text;
-                    contragent.ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил контрагента";
-                    contragent.Active = "1";
+                    Contragent contragent = new Contragent
+                    {
+                        Name = tb_namecontragent.Text,
+                        ServiceInfo = $"{DateTime.Now} {App.ActiveUser} добавил контрагента",
+                        Active = "1"
+                    };
                     ef.Add(contragent);
                     ef.SaveChanges();
                     btn_refresh_Click(sender, e);
                     ContentAdd.Hide();
                 }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-
-                throw;
+                MessageBox.Show("Упс.. Что-то пошло не так\n\nВозможно произошел разрыв соединения с сервером\n\nОтладочная информация\n" + exception.Message, "Ошибка при выполнении кода", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -206,20 +202,23 @@ namespace Registrant.Pages
         {
             try
             {
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                using (RegistrantCoreContext ef = new RegistrantCoreContext())
                 {
-                    var temp = ef.Contragents.FirstOrDefault(x => x.IdContragent == Convert.ToInt64(tb_idcontragent.Text));
-                    temp.Name = tb_edit_name.Text;
-                    temp.ServiceInfo = temp.ServiceInfo + "\n" + DateTime.Now + " " + App.ActiveUser + " изменил название контрагента";
+                    var contragent = ef.Contragents.FirstOrDefault(x => x.IdContragent == Convert.ToInt32(tb_idcontragent.Text));
+                    if (contragent != null)
+                    {
+                        contragent.Name = tb_edit_name.Text;
+                        contragent.ServiceInfo =
+                            $"{contragent.ServiceInfo}\n {DateTime.Now} {App.ActiveUser} изменил название контрагента";
+                    }
                     ef.SaveChanges();
                     btn_refresh_Click(sender, e);
                     ContentEdit.Hide();
                 }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-
-                throw;
+                MessageBox.Show("Упс.. Что-то пошло не так\n\nВозможно произошел разрыв соединения с сервером\n\nОтладочная информация\n" + exception.Message, "Ошибка при выполнении кода", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -244,15 +243,18 @@ namespace Registrant.Pages
         {
             ContentInfo.ShowAsync();
             var bt = e.OriginalSource as Button;
-            var current = bt.DataContext as DB.Contragent;
+            var current = bt?.DataContext as Contragent;
 
             if (current != null)
             {
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                using (RegistrantCoreContext ef = new RegistrantCoreContext())
                 {
-                    var temp = ef.Contragents.FirstOrDefault(x => x.IdContragent == current.IdContragent);
-                    text_namecontragent.Text = temp.Name;
-                    text_infocontragent.Text = temp.ServiceInfo;
+                    var contragent = ef.Contragents.FirstOrDefault(x => x.IdContragent == current.IdContragent);
+                    if (contragent != null)
+                    {
+                        text_namecontragent.Text = contragent.Name;
+                        text_infocontragent.Text = contragent.ServiceInfo;
+                    }
                 }
             }
         }
