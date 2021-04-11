@@ -133,7 +133,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Контрагент:"  Style="{StaticResource BodyTextBlockStyle}" />
-                        <TextBlock Text="{Binding IdContragentNavigation?.Name}" Margin="10 0 0 0"  Style="{StaticResource BodyTextBlockStyle}" />
+                        <TextBlock Text="{Binding IdContragentNavigation.Name}" Margin="10 0 0 0"  Style="{StaticResource BodyTextBlockStyle}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Доверенность:"  Style="{StaticResource BodyTextBlockStyle}" />

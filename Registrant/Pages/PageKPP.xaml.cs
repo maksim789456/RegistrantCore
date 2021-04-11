@@ -20,14 +20,14 @@ namespace Registrant.Pages
     /// </summary>
     public partial class PageKPP : Page
     {
-        Controllers.KPPShipmentsController kPP;
+        Controllers.KppShipmentsController kPP;
         Controllers.PlanShipmentController plan;
 
 
         public PageKPP()
         {
             InitializeComponent();
-            kPP = new Controllers.KPPShipmentsController();
+            kPP = new Controllers.KppShipmentsController();
             plan = new Controllers.PlanShipmentController();
 
             DatePicker.SelectedDate = DateTime.Now;
@@ -71,7 +71,7 @@ namespace Registrant.Pages
         private void btn_arrive_Click(object sender, RoutedEventArgs e)
         {
             var bt = e.OriginalSource as Button;
-            var current = bt.DataContext as Models.KPPShipments;
+            var current = bt.DataContext as Models.KppShipments;
 
             if (current != null)
             {
@@ -101,7 +101,7 @@ namespace Registrant.Pages
         private void btn_left_Click(object sender, RoutedEventArgs e)
         {
             var bt = e.OriginalSource as Button;
-            var current = bt.DataContext as Models.KPPShipments;
+            var current = bt.DataContext as Models.KppShipments;
             if (current !=null)
             {
                 MessageBoxResult result = (MessageBoxResult)ModernWpf.MessageBox.Show("Сменить статус водителя " + current.FIO + " на Покинул склад?", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Information);

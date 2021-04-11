@@ -1,20 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
 
 namespace Registrant.Forms
 {
-    /// <summary>
-    /// Логика взаимодействия для EditConnect.xaml
-    /// </summary>
     public partial class EditConnect
     {
         public EditConnect()
@@ -26,7 +13,6 @@ namespace Registrant.Forms
             tb_db.Text = Settings.Connection.Default.Database;
             tb_login.Text = Settings.Connection.Default.Login;
             tb_pass.Text = Settings.Connection.Default.Password;
-
         }
 
         private void btn_save_Click(object sender, RoutedEventArgs e)
@@ -37,7 +23,8 @@ namespace Registrant.Forms
             Settings.Connection.Default.Login = tb_login.Text;
             Settings.Connection.Default.Password = tb_pass.Text;
             Settings.Connection.Default.Save();
-            this.Close();
+            
+            Close();
         }
     }
 }
