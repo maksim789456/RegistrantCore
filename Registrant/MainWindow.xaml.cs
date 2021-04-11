@@ -1,24 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using MessageBox = ModernWpf.MessageBox;
 
 namespace Registrant
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow 
     {
         Pages.PageContragents pageContragents;
@@ -39,9 +27,7 @@ namespace Registrant
             //Поток наа 1 старт чтобы при старте не тормозилось
             Thread thread = new Thread(TestConnect);
             thread.Start();
-
         }
-
 
         /// <summary>
         /// Открытие дебага
@@ -66,7 +52,6 @@ namespace Registrant
             thread1.Start();
         }
 
-
         /// <summary>
         /// Проверка существует ли вообще подключение к серверу
         /// </summary>
@@ -79,7 +64,7 @@ namespace Registrant
             {
                 using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                 {
-                    var Test = ef.Engines.ToList();
+                    var engines = ef.Engines.ToList();
                     Dispatcher.Invoke(() => ContentWait.Hide());
                     Dispatcher.Invoke(() => ContentAuth.ShowAsync());
                 }
@@ -112,7 +97,7 @@ namespace Registrant
         {
             Settings.User.Default.login = tb_login.Text;
 
-            //В проде убрать! --- сохранение паролей
+            //TODO: В проде убрать! --- сохранение паролей
             Settings.User.Default.password = tb_password.Password;
             Settings.User.Default.Save();
 
@@ -120,8 +105,7 @@ namespace Registrant
             {
                 using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                 {
-
-                    var user = ef.Users.Where(x => tb_login.Text == x.Login && tb_password.Password == x.Password).FirstOrDefault();
+                    var user = ef.Users.FirstOrDefault(x => tb_login.Text == x.Login && tb_password.Password == x.Password);
 
                     if (user != null)
                     {
@@ -136,10 +120,9 @@ namespace Registrant
 
                 }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-
-                throw;
+                MessageBox.Show(exception.Message, "Ошибка!");
             }
         }
 
@@ -148,59 +131,53 @@ namespace Registrant
         /// </summary>
         void Verify()
         {
-            if (App.LevelAccess == "admin")
+            switch (App.LevelAccess)
             {
-                nav_admin.Visibility = Visibility.Visible;
-                nav_contragents.Visibility = Visibility.Visible;
-                nav_drivers.Visibility = Visibility.Visible;
-                nav_jurnalkpp.Visibility = Visibility.Visible;
-                nav_jurnalshipment.Visibility = Visibility.Visible;
-                nav_userset.Visibility = Visibility.Visible;
+                case "admin":
+                    nav_admin.Visibility = Visibility.Visible;
+                    nav_contragents.Visibility = Visibility.Visible;
+                    nav_drivers.Visibility = Visibility.Visible;
+                    nav_jurnalkpp.Visibility = Visibility.Visible;
+                    nav_jurnalshipment.Visibility = Visibility.Visible;
+                    nav_userset.Visibility = Visibility.Visible;
 
-                //
-                pageKPP = new Pages.PageKPP();
-                pageContragents = new Pages.PageContragents();
-                pageDrivers = new Pages.PageDrivers();
-                pageShipments = new Pages.PageShipments();
+                    pageKPP = new Pages.PageKPP();
+                    pageContragents = new Pages.PageContragents();
+                    pageDrivers = new Pages.PageDrivers();
+                    pageShipments = new Pages.PageShipments();
+                    break;
+                case "reader":
+                    nav_drivers.Visibility = Visibility.Visible;
+                    nav_jurnalshipment.Visibility = Visibility.Visible;
+                    nav_userset.Visibility = Visibility.Visible;
 
-            }
-            else if (App.LevelAccess == "reader")
-            {
-                nav_drivers.Visibility = Visibility.Visible;
-                nav_jurnalshipment.Visibility = Visibility.Visible;
-                nav_userset.Visibility = Visibility.Visible;
+                    pageDrivers = new Pages.PageDrivers();
+                    pageShipments = new Pages.PageShipments();
+                    break;
+                case "warehouse":
+                    nav_drivers.Visibility = Visibility.Visible;
+                    nav_jurnalshipment.Visibility = Visibility.Visible;
+                    nav_userset.Visibility = Visibility.Visible;
 
-                pageDrivers = new Pages.PageDrivers();
-                pageShipments = new Pages.PageShipments();
+                    pageContragents = new Pages.PageContragents();
+                    pageDrivers = new Pages.PageDrivers();
+                    pageShipments = new Pages.PageShipments();
+                    break;
+                case "shipment":
+                    nav_jurnalshipment.Visibility = Visibility.Visible;
+                    nav_contragents.Visibility = Visibility.Visible;
+                    nav_drivers.Visibility = Visibility.Visible;
+                    nav_userset.Visibility = Visibility.Visible;
 
-            }
-            else if (App.LevelAccess == "warehouse")
-            {
-                nav_drivers.Visibility = Visibility.Visible;
-                nav_jurnalshipment.Visibility = Visibility.Visible;
-                nav_userset.Visibility = Visibility.Visible;
-
-                pageContragents = new Pages.PageContragents();
-                pageDrivers = new Pages.PageDrivers();
-                pageShipments = new Pages.PageShipments();
-
-            }
-            else if (App.LevelAccess == "shipment")
-            {
-                nav_jurnalshipment.Visibility = Visibility.Visible;
-                nav_contragents.Visibility = Visibility.Visible;
-                nav_drivers.Visibility = Visibility.Visible;
-                nav_userset.Visibility = Visibility.Visible;
-
-                pageContragents = new Pages.PageContragents();
-                pageDrivers = new Pages.PageDrivers();
-                pageShipments = new Pages.PageShipments();
-            }
-            else if (App.LevelAccess == "kpp")
-            {
-                nav_jurnalkpp.Visibility = Visibility.Visible;
-                nav_userset.Visibility = Visibility.Visible;
-                pageKPP = new Pages.PageKPP();
+                    pageContragents = new Pages.PageContragents();
+                    pageDrivers = new Pages.PageDrivers();
+                    pageShipments = new Pages.PageShipments();
+                    break;
+                case "kpp":
+                    nav_jurnalkpp.Visibility = Visibility.Visible;
+                    nav_userset.Visibility = Visibility.Visible;
+                    pageKPP = new Pages.PageKPP();
+                    break;
             }
         }
 
