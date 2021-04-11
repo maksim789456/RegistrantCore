@@ -1,27 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
+using Registrant.DB;
 
 namespace Registrant.Pages
 {
-    /// <summary>
-    /// Логика взаимодействия для PageShipments.xaml
-    /// </summary>
-    public partial class PageShipments : Page
+    public partial class PageShipments
     {
-        Controllers.ShipmentController controller = new Controllers.ShipmentController();
+        Controllers.ShipmentController controller;
 
         public PageShipments()
         {
@@ -29,18 +17,17 @@ namespace Registrant.Pages
             controller = new Controllers.ShipmentController();
             DatePicker.SelectedDate = DateTime.Now;
 
-            Thread thread = new Thread(new ThreadStart(RefreshThread));
+            Thread thread = new Thread(RefreshThread);
             thread.Start();
 
             if (App.LevelAccess == "admin" || App.LevelAccess == "shipment")
             {
                 btn_new.Visibility = Visibility.Visible;
             }
-
         }
 
         /// <summary>
-        /// Потоко
+        /// Thread method
         /// </summary>
         void RefreshThread()
         {
@@ -53,22 +40,22 @@ namespace Registrant.Pages
                     {
                         if (Dispatcher.Invoke(() => cb_sort.SelectedIndex == 0))
                         {
-                            Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = controller.GetShipments(DatePicker.SelectedDate.Value));
+                            Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = controller.GetShipments(DatePicker.SelectedDate ?? default));
                             Dispatcher.Invoke(() => DataGrid_Shipments.Items.Refresh());
                         }
                         else if (Dispatcher.Invoke(() => cb_sort.SelectedIndex == 1))
                         {
-                            Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = controller.GetShipmentsFactReg(DatePicker.SelectedDate.Value));
+                            Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = controller.GetShipmentsFactReg(DatePicker.SelectedDate ?? default));
                             Dispatcher.Invoke(() => DataGrid_Shipments.Items.Refresh());
                         }
                         else if(Dispatcher.Invoke(() => cb_sort.SelectedIndex == 2))
                         {
-                            Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = controller.GetShipmentsArrive(DatePicker.SelectedDate.Value));
+                            Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = controller.GetShipmentsArrive(DatePicker.SelectedDate ?? default));
                             Dispatcher.Invoke(() => DataGrid_Shipments.Items.Refresh());
                         }
                         else if(Dispatcher.Invoke(() => cb_sort.SelectedIndex == 3))
                         {
-                            Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = controller.GetShipmentsLeft(DatePicker.SelectedDate.Value));
+                            Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = controller.GetShipmentsLeft(DatePicker.SelectedDate ?? default));
                             Dispatcher.Invoke(() => DataGrid_Shipments.Items.Refresh());
                         }
                     }
@@ -81,16 +68,16 @@ namespace Registrant.Pages
         private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             DataGrid_Shipments.ItemsSource = null;
-            Text_date.Text = "Реестр за " + DatePicker.SelectedDate.Value.ToShortDateString();
+            if (DatePicker.SelectedDate.HasValue)
+                Text_date.Text = "Реестр за " + DatePicker.SelectedDate.Value.ToShortDateString();
             btn_refresh_Click(sender, e);
         }
 
         private void btn_refresh_Click(object sender, RoutedEventArgs e)
         {
             
-            if (tb_search.Text != null)
+            if (!string.IsNullOrWhiteSpace(tb_search.Text))
             {
-                
                 if (DatePicker.SelectedDate != null)
                 {
                     DataGrid_Shipments.ItemsSource = null;
@@ -151,16 +138,12 @@ namespace Registrant.Pages
                         // Нашел
                     }
                 }
-                catch (Exception)
+                catch (Exception exception)
                 {
-
-                    throw;
+                    MessageBox.Show(exception.Message, "Ошибка!");
                 }
             }
-
-
         }
-
 
         private void ButtonAdd_Click(object sender, RoutedEventArgs e)
         {
@@ -171,21 +154,21 @@ namespace Registrant.Pages
             btn_refresh_Click(sender, e);
         }
 
-
         private void btn_load_Click(object sender, RoutedEventArgs e)
         {
             var bt = e.OriginalSource as Button;
-            var current = bt.DataContext as Models.Shipments;
+            var current = bt?.DataContext as Models.Shipments;
 
             if (current != null)
             {
-                MessageBoxResult result = (MessageBoxResult)ModernWpf.MessageBox.Show("Сменить статус водителя " + current.FIO + " на Загрузка начата?", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                MessageBoxResult? result = ModernWpf.MessageBox.Show("Сменить статус водителя " + current.FIO + " на Загрузка начата?", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                 {
-                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                    using (RegistrantCoreContext ef = new RegistrantCoreContext())
                     {
-                        var temp = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
-                        temp.IdTimeNavigation.DateTimeLoad = DateTime.Now;
+                        var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
+                        if (shipment != null) 
+                            shipment.IdTimeNavigation.DateTimeLoad = DateTime.Now;
                         ef.SaveChanges();
                     }
                 }
@@ -197,21 +180,23 @@ namespace Registrant.Pages
         private void btn_endload_Click(object sender, RoutedEventArgs e)
         {
             var bt = e.OriginalSource as Button;
-            var current = bt.DataContext as Models.Shipments;
+            var current = bt?.DataContext as Models.Shipments;
 
             if (current != null)
             {
-                MessageBoxResult result = (MessageBoxResult)ModernWpf.MessageBox.Show("Сменить статус водителя " + current.FIO + " на Загрузка окончена?", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                MessageBoxResult? result = ModernWpf.MessageBox.Show(
+                    "Сменить статус водителя " + current.FIO + " на Загрузка окончена?", "Внимание",
+                    MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                 {
-                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                    using (RegistrantCoreContext ef = new RegistrantCoreContext())
                     {
-                        var temp = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
-                        temp.IdTimeNavigation.DateTimeEndLoad = DateTime.Now;
+                        var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
+                        if (shipment != null) 
+                            shipment.IdTimeNavigation.DateTimeEndLoad = DateTime.Now;
                         ef.SaveChanges();
                     }
                 }
-                   
             }
 
             btn_refresh_Click(sender, e);
@@ -220,7 +205,7 @@ namespace Registrant.Pages
         private void btn_edit_Click(object sender, RoutedEventArgs e)
         {
             var bt = e.OriginalSource as Button;
-            var current = bt.DataContext as Models.Shipments;
+            var current = bt?.DataContext as Models.Shipments;
             if (current !=null)
             {
                 Forms.AddOrEditShipment addOr = new Forms.AddOrEditShipment(current.IdShipment);
@@ -228,8 +213,6 @@ namespace Registrant.Pages
             }
             btn_refresh_Click(sender, e);
         }
-
-
 
         private void btn_print_Click(object sender, RoutedEventArgs e)
         {
@@ -245,7 +228,8 @@ namespace Registrant.Pages
             }
             else
             {
-                MessageBoxResult result = (MessageBoxResult)ModernWpf.MessageBox.Show("Вам открыть окно вид для сбыта?", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Asterisk);
+                MessageBoxResult? result = ModernWpf.MessageBox.Show("Открыть окно вид для сбыта?", "Внимание",
+                    MessageBoxButton.YesNo, MessageBoxImage.Asterisk);
                 if (result == MessageBoxResult.Yes)
                 {
                     Forms.PrintShipments print = new Forms.PrintShipments();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
+using Registrant.DB;
 
 namespace Registrant.Pages
 {
@@ -11,7 +12,7 @@ namespace Registrant.Pages
             InitializeComponent();
 
             tb_refresher.Text = Settings.App.Default.RefreshContent.ToString();
-            using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+            using (RegistrantCoreContext ef = new RegistrantCoreContext())
             {
                 var user = ef.Users.FirstOrDefault(x => x.IdUser == id);
                 if (user != null)
@@ -29,7 +30,7 @@ namespace Registrant.Pages
         {
             if (tb_login.Text != "")
             {
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                using (RegistrantCoreContext ef = new RegistrantCoreContext())
                 {
                     var user = ef.Users.FirstOrDefault(x => x.IdUser == Convert.ToInt32(tb_id.Text));
 

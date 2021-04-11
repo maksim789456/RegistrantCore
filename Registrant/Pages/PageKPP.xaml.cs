@@ -1,28 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using MessageBox = ModernWpf.MessageBox;
+using Registrant.Models;
 
 namespace Registrant.Pages
 {
-    /// <summary>
-    /// Логика взаимодействия для PageKPP.xaml
-    /// </summary>
-    public partial class PageKPP : Page
+    public partial class PageKPP
     {
         Controllers.KppShipmentsController kPP;
         Controllers.PlanShipmentController plan;
-
 
         public PageKPP()
         {
@@ -32,7 +21,7 @@ namespace Registrant.Pages
 
             DatePicker.SelectedDate = DateTime.Now;
 
-            Thread thread = new Thread(new ThreadStart(RefreshThread));
+            Thread thread = new Thread(RefreshThread);
             thread.Start();
         }
 
@@ -41,8 +30,8 @@ namespace Registrant.Pages
             while (true)
             {
                 Thread.Sleep(Settings.App.Default.RefreshContent);
-                Dispatcher.Invoke(() => DataGrid_Plan.ItemsSource = plan.GetPlanShipments(Dispatcher.Invoke(() => DatePicker.SelectedDate.Value)));
-                Dispatcher.Invoke(() => DataGrid_Drivers.ItemsSource = kPP.GetShipments(Dispatcher.Invoke(() => DatePicker.SelectedDate.Value)));
+                Dispatcher.Invoke(() => DataGrid_Plan.ItemsSource = plan.GetPlanShipments(Dispatcher.Invoke(() => DatePicker.SelectedDate ?? default)));
+                Dispatcher.Invoke(() => DataGrid_Drivers.ItemsSource = kPP.GetShipments(Dispatcher.Invoke(() => DatePicker.SelectedDate ?? default)));
                 Dispatcher.Invoke(() => DataGrid_Plan.Items.Refresh());
                 Dispatcher.Invoke(() => DataGrid_Drivers.Items.Refresh());
             }
@@ -53,14 +42,13 @@ namespace Registrant.Pages
             ContentAdd.Hide();
         }
 
-
         private void btn_refresh_Click(object sender, RoutedEventArgs e)
         {
             Dispatcher.Invoke(() => DataGrid_Plan.ItemsSource = null);
             Dispatcher.Invoke(() => DataGrid_Drivers.ItemsSource = null);
 
-            Dispatcher.Invoke(() => DataGrid_Plan.ItemsSource = plan.GetPlanShipments(Dispatcher.Invoke(() => DatePicker.SelectedDate.Value)));
-            Dispatcher.Invoke(() => DataGrid_Drivers.ItemsSource = kPP.GetShipments(Dispatcher.Invoke(() => DatePicker.SelectedDate.Value)));
+            Dispatcher.Invoke(() => DataGrid_Plan.ItemsSource = plan.GetPlanShipments(Dispatcher.Invoke(() => DatePicker.SelectedDate ?? default)));
+            Dispatcher.Invoke(() => DataGrid_Drivers.ItemsSource = kPP.GetShipments(Dispatcher.Invoke(() => DatePicker.SelectedDate ?? default)));
         }
 
         private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -71,11 +59,13 @@ namespace Registrant.Pages
         private void btn_arrive_Click(object sender, RoutedEventArgs e)
         {
             var bt = e.OriginalSource as Button;
-            var current = bt.DataContext as Models.KppShipments;
+            var current = bt.DataContext as KppShipments;
 
             if (current != null)
             {
-                MessageBoxResult result = (MessageBoxResult)ModernWpf.MessageBox.Show("Сменить статус водителя " + current.FIO + " на Прибыл?", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                MessageBoxResult? result = ModernWpf.MessageBox.Show(
+                    "Сменить статус водителя " + current.FIO + " на Прибыл?", "Внимание", MessageBoxButton.YesNo,
+                    MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                 {
                     try
@@ -83,44 +73,45 @@ namespace Registrant.Pages
                         using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                         {
                             var temp = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
-                            temp.IdTimeNavigation.DateTimeArrive = DateTime.Now;
+                            if (temp != null) 
+                                temp.IdTimeNavigation.DateTimeArrive = DateTime.Now;
                             ef.SaveChanges();
                             btn_refresh_Click(sender, e);
                         }
                     }
-                    catch (Exception)
+                    catch (Exception exception)
                     {
-
-                        throw;
+                        MessageBox.Show(exception.Message, "Ошибка!");
                     }
                 }
             }
-
         }
 
         private void btn_left_Click(object sender, RoutedEventArgs e)
         {
             var bt = e.OriginalSource as Button;
-            var current = bt.DataContext as Models.KppShipments;
-            if (current !=null)
+            var current = bt?.DataContext as KppShipments;
+            if (current != null)
             {
-                MessageBoxResult result = (MessageBoxResult)ModernWpf.MessageBox.Show("Сменить статус водителя " + current.FIO + " на Покинул склад?", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                MessageBoxResult? result =
+                    MessageBox.Show("Сменить статус водителя " + current.FIO + " на Покинул склад?", "Внимание",
+                        MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                 {
                     try
                     {
                         using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                         {
-                            var temp = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
-                            temp.IdTimeNavigation.DateTimeLeft = DateTime.Now;
+                            var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
+                            if (shipment != null) 
+                                shipment.IdTimeNavigation.DateTimeLeft = DateTime.Now;
                             ef.SaveChanges();
                             btn_refresh_Click(sender, e);
                         }
                     }
-                    catch (Exception)
+                    catch (Exception exception)
                     {
-
-                        throw;
+                        MessageBox.Show(exception.Message, "Ошибка!");
                     }
                 }
             }
@@ -146,26 +137,28 @@ namespace Registrant.Pages
         private void btn_registration_Click(object sender, RoutedEventArgs e)
         {
             var bt = e.OriginalSource as Button;
-            var current = bt.DataContext as Models.PlanShipment;
+            var current = bt?.DataContext as PlanShipment;
             if (current !=null)
             {
-                MessageBoxResult result = (MessageBoxResult)ModernWpf.MessageBox.Show("Сменить статус водителя " + current.FIO + " на Зарегистрирован?", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                MessageBoxResult? result =
+                    MessageBox.Show("Сменить статус водителя " + current.FIO + " на Зарегистрирован?", "Внимание",
+                        MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                 {
                     try
                     {
                         using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                         {
-                            var temp = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
-                            temp.IdTimeNavigation.DateTimeFactRegist = DateTime.Now;
+                            var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
+                            if (shipment != null) 
+                                shipment.IdTimeNavigation.DateTimeFactRegist = DateTime.Now;
                             ef.SaveChanges();
                             btn_refresh_Click(sender, e);
                         }
                     }
-                    catch (Exception)
+                    catch (Exception exception)
                     {
-
-                        throw;
+                        MessageBox.Show(exception.Message, "Ошибка!");
                     }
                 }
             }
@@ -184,21 +177,25 @@ namespace Registrant.Pages
             {
                 using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                 {
-                    DB.Shipment shipment = new DB.Shipment();
-                    shipment.IdDriverNavigation = new DB.Driver();
-                    shipment.IdTimeNavigation = new DB.Time();
-                    shipment.IdDriverNavigation.Family = tb_family.Text;
-                    shipment.IdDriverNavigation.Name = tb_name.Text;
-                    shipment.IdDriverNavigation.Patronymic = tb_patronymic.Text;
-                    shipment.IdDriverNavigation.Phone = tb_phone.Text;
-                    shipment.IdDriverNavigation.AutoNumber = tb_autonum.Text;
-                    shipment.IdDriverNavigation.Passport = tb_passport.Text;
-                    shipment.IdDriverNavigation.Info = tb_info.Text;
-                    shipment.IdDriverNavigation.ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил карточку водителя";
-
-                    shipment.IdTimeNavigation.DateTimeFactRegist = DateTime.Now;
-
-                    shipment.ServiceInfo = DateTime.Now + " " + App.ActiveUser + " каскадное добавление с карточкой водителя";
+                    DB.Shipment shipment = new DB.Shipment
+                    {
+                        IdDriverNavigation = new DB.Driver
+                        {
+                            Family = tb_family.Text,
+                            Name = tb_name.Text,
+                            Patronymic = tb_patronymic.Text,
+                            Phone = tb_phone.Text,
+                            AutoNumber = tb_autonum.Text,
+                            Passport = tb_passport.Text,
+                            Info = tb_info.Text,
+                            ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил карточку водителя"
+                        }, 
+                        IdTimeNavigation = new DB.Time
+                        {
+                            DateTimeFactRegist = DateTime.Now
+                        },
+                        ServiceInfo = DateTime.Now + " " + App.ActiveUser + " каскадное добавление с карточкой водителя"
+                    };
 
                     ef.Add(shipment);
                     ef.SaveChanges();
@@ -208,9 +205,8 @@ namespace Registrant.Pages
             }
             catch (Exception ex)
             {
-                throw;
+                MessageBox.Show(ex.Message, "Ошибка!");
             }
         }
-
     }
 }
