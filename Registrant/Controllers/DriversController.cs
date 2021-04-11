@@ -1,63 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using ModernWpf;
+using Registrant.Models;
 
 namespace Registrant.Controllers
 {
     public class DriversController
     {
-        List<Models.Drivers> Driver { get; set; }
+        List<Drivers> Driver { get; set; }
 
         public DriversController()
         {
-            Driver = new List<Models.Drivers>();
+            Driver = new List<Drivers>();
         }
 
-        public List<Models.Drivers> GetDrivers()
+        public List<Drivers> GetDrivers()
         {
             Driver.Clear();
             try
             {
                 using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                 {
-                    var temp = ef.Drivers.Where(x => x.Active != "0").OrderByDescending(x => x.IdDriver);
+                    var drivers = ef.Drivers.Where(x => x.Active != "0").OrderByDescending(x => x.IdDriver);
 
-                    foreach (var item in temp)
+                    foreach (var item in drivers)
                     {
-                        Models.Drivers driver = new Models.Drivers(item);
+                        Drivers driver = new Drivers(item);
                         Driver.Add(driver);
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
-                throw;
+                MessageBox.Show(e.Message, "Ошибка!");
             }
             return Driver;
         }
 
-        public List<Models.Drivers> GetDriversAll()
+        public List<Drivers> GetDriversAll()
         {
             Driver.Clear();
             try
             {
                 using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                 {
-                    var temp = ef.Drivers.OrderByDescending(x => x.IdDriver);
+                    var drivers = ef.Drivers.OrderByDescending(x => x.IdDriver);
 
-                    foreach (var item in temp)
+                    foreach (var item in drivers)
                     {
-                        Models.Drivers driver = new Models.Drivers(item);
+                        Drivers driver = new Drivers(item);
                         Driver.Add(driver);
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
-                throw;
+                MessageBox.Show(e.Message, "Ошибка!");
             }
             return Driver;
         }

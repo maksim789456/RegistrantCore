@@ -1,47 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Registrant.Models;
 
 namespace Registrant.Controllers
 {
     public class PrintShipmentController
     {
-        List<Models.PrintShipments> PlanShipments { get; set; }
+        List<PrintShipments> PlanShipments { get; set; }
 
         public PrintShipmentController()
         {
-            PlanShipments = new List<Models.PrintShipments>();
+            PlanShipments = new List<PrintShipments>();
         }
 
-        public List<Models.PrintShipments> GetShipmentsDate(DateTime date)
+        public List<PrintShipments> GetShipmentsDate(DateTime date)
         {
             PlanShipments.Clear();
 
-            date = date.Date;
             using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
             {
-                var temp = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date);
-                foreach (var item in temp)
+                var shipments = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date);
+                foreach (var item in shipments)
                 {
-                    Models.PrintShipments shipment = new Models.PrintShipments(item);
+                    PrintShipments shipment = new PrintShipments(item);
                     PlanShipments.Add(shipment);
                 }
             }
             return PlanShipments;
         }
 
-       public List<Models.PrintShipments> GetShipmentsMonth(DateTime date)
+       public List<PrintShipments> GetShipmentsMonth(DateTime date)
         {
             PlanShipments.Clear();
 
-            date = date.Date;
             using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
             {
-                var temp = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Month == date.Month);
-                foreach (var item in temp)
+                var shipments = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Month == date.Month);
+                foreach (var item in shipments)
                 {
-                    Models.PrintShipments shipment = new Models.PrintShipments(item);
+                    PrintShipments shipment = new PrintShipments(item);
                     PlanShipments.Add(shipment);
                 }
             }

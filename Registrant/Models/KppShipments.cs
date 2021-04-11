@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Registrant.Models
 {
-    public class KPPShipments
+    public class KppShipments
     {
         public int IdShipment { get; set; }
         public string FIO { get; set; }
@@ -16,7 +17,7 @@ namespace Registrant.Models
         public string btn_left { get; set; }
         public string btn_arrive { get; set; }
 
-        public KPPShipments(DB.Shipment shipment)
+        public KppShipments(DB.Shipment shipment)
         {
             IdShipment = shipment.IdShipment;
             FIO = shipment.IdDriverNavigation?.Family + " " + shipment.IdDriverNavigation?.Name + " " + shipment.IdDriverNavigation?.Patronymic;
@@ -24,7 +25,7 @@ namespace Registrant.Models
             if (shipment.IdTimeNavigation.DateTimeFactRegist.HasValue)
             {
                 PlanDateFact = shipment.IdTimeNavigation.DateTimeFactRegist.Value;
-                PlanDateFactString = PlanDateFact.ToString();
+                PlanDateFactString = PlanDateFact.ToString(CultureInfo.GetCultureInfo("ru-ru"));
             }
 
 
