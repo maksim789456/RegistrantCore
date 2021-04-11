@@ -15,8 +15,13 @@ namespace Registrant.Models
         public PlanShipment(DB.Shipment shipment)
         {
             IdShipment = shipment.IdShipment;
-            FIO = shipment.IdDriverNavigation?.Family + " " + shipment.IdDriverNavigation?.Name + " " + shipment.IdDriverNavigation?.Patronymic;
-            Phone = shipment.IdDriverNavigation?.Phone;
+            
+            if (shipment.IdDriverNavigation != null)
+            {
+                FIO = $"{shipment.IdDriverNavigation.Family} {shipment.IdDriverNavigation.Name} {shipment.IdDriverNavigation.Patronymic}";
+                Phone = shipment.IdDriverNavigation.Phone;
+            }
+            
             if (shipment.IdTimeNavigation.DateTimePlanRegist.HasValue)
             {
                 PlanDateTime = shipment.IdTimeNavigation.DateTimePlanRegist.Value;

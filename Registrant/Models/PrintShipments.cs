@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Registrant.Models
 {
@@ -18,7 +16,6 @@ namespace Registrant.Models
         public string DateLoad { get; set; }
         public string DateEndLoad { get; set; }
 
-
         public string Sklad { get; set; }
         public string Attorney { get; set; }
         public string Auto { get; set; }
@@ -35,12 +32,14 @@ namespace Registrant.Models
         public PrintShipments(DB.Shipment shipment)
         {
             IdShipment = shipment.IdShipment;
-            FIOTelephone = shipment.IdDriverNavigation?.Family + " " + shipment.IdDriverNavigation?.Name + " " + shipment.IdDriverNavigation?.Patronymic + " " + shipment.IdDriverNavigation?.Phone;
+            if (shipment.IdDriverNavigation != null)
+                FIOTelephone = $"{shipment.IdDriverNavigation.Family} {shipment.IdDriverNavigation.Name} {shipment.IdDriverNavigation.Patronymic} {shipment.IdDriverNavigation.Phone}";
 
-            DatePlan = (DateTime)shipment.IdTimeNavigation?.DateTimePlanRegist;
-            DateArrive = shipment.IdTimeNavigation?.DateTimeArrive.ToString();
-            DateLoad = shipment.IdTimeNavigation?.DateTimeLoad.ToString();
-            DateEndLoad = shipment.IdTimeNavigation?.DateTimeEndLoad.ToString();
+            if (shipment.IdTimeNavigation.DateTimePlanRegist.HasValue)
+                DatePlan = shipment.IdTimeNavigation.DateTimePlanRegist.Value;
+            DateArrive = shipment.IdTimeNavigation.DateTimeArrive.ToString();
+            DateLoad = shipment.IdTimeNavigation.DateTimeLoad.ToString();
+            DateEndLoad = shipment.IdTimeNavigation.DateTimeEndLoad.ToString();
 
             Contragent = shipment.IdDriverNavigation?.IdContragentNavigation?.Name;
             Attorney = shipment.IdDriverNavigation?.Attorney;
@@ -49,8 +48,8 @@ namespace Registrant.Models
             PlanDate = DatePlan.ToShortDateString();
             PlanTime = DatePlan.ToShortTimeString();
 
-            DateFact = shipment.IdTimeNavigation?.DateTimeFactRegist.ToString();
-            DateLeft = shipment.IdTimeNavigation?.DateTimeLeft.ToString();
+            DateFact = shipment.IdTimeNavigation.DateTimeFactRegist.ToString();
+            DateLeft = shipment.IdTimeNavigation.DateTimeLeft.ToString();
             Sklad = "МВП";
 
             NumRealese = shipment.NumRealese;
@@ -65,13 +64,13 @@ namespace Registrant.Models
             Family = shipment.IdDriverNavigation?.Family;
             NumAuto = shipment.IdDriverNavigation?.AutoNumber;
 
-            TimeLoad = shipment.IdTimeNavigation?.DateTimeLoad?.ToShortTimeString();
-            TimeEnd = shipment.IdTimeNavigation?.DateTimeEndLoad?.ToShortTimeString();
+            TimeLoad = shipment.IdTimeNavigation.DateTimeLoad?.ToShortTimeString();
+            TimeEnd = shipment.IdTimeNavigation.DateTimeEndLoad?.ToShortTimeString();
 
-            if (shipment.IdTimeNavigation?.DateTimeLoad !=null && shipment.IdTimeNavigation?.DateTimeEndLoad !=null)
+            if (shipment.IdTimeNavigation.DateTimeLoad != null && shipment.IdTimeNavigation.DateTimeEndLoad != null)
             {
-                DateTime date1 = (DateTime)(shipment.IdTimeNavigation.DateTimeLoad);
-                DateTime date2 = (DateTime)(shipment.IdTimeNavigation.DateTimeEndLoad);
+                DateTime date1 = shipment.IdTimeNavigation.DateTimeLoad.Value;
+                DateTime date2 = shipment.IdTimeNavigation.DateTimeEndLoad.Value;
                 var res = date2 - date1;
                 TimeTotal = res.ToString(@"hh\:mm");
             }

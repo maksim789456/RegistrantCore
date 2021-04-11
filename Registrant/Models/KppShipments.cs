@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 
 namespace Registrant.Models
 {
@@ -20,14 +18,13 @@ namespace Registrant.Models
         public KppShipments(DB.Shipment shipment)
         {
             IdShipment = shipment.IdShipment;
-            FIO = shipment.IdDriverNavigation?.Family + " " + shipment.IdDriverNavigation?.Name + " " + shipment.IdDriverNavigation?.Patronymic;
+            FIO = $"{shipment.IdDriverNavigation?.Family} {shipment.IdDriverNavigation?.Name} {shipment.IdDriverNavigation?.Patronymic}";
             Phone = shipment.IdDriverNavigation?.Phone;
             if (shipment.IdTimeNavigation.DateTimeFactRegist.HasValue)
             {
                 PlanDateFact = shipment.IdTimeNavigation.DateTimeFactRegist.Value;
                 PlanDateFactString = PlanDateFact.ToString(CultureInfo.GetCultureInfo("ru-ru"));
             }
-
 
             if (shipment.IdTimeNavigation?.DateTimeLeft != null)
             {
@@ -58,7 +55,6 @@ namespace Registrant.Models
                 TextStatus = "Зарегистрирован";
                 btn_arrive = "Visible";
                 btn_left = "Collapsed";
-
             }
             else if (shipment.IdTimeNavigation?.DateTimeFactRegist == null && shipment.IdTimeNavigation?.DateTimePlanRegist != null)
             {

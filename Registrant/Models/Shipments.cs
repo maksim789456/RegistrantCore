@@ -6,8 +6,6 @@ namespace Registrant.Models
 {
     public class Shipments : DB.Shipment
     {
-        //Отгрузка
-
         //Водитель
         public string FIO { get; set; }
         public string Family { get; set; }
@@ -15,12 +13,12 @@ namespace Registrant.Models
         public string Patronymic { get; set; }
         public string Phone { get; set; }
         public string Contragent { get; set; }
-        public string DateTimePlanRegist { get; set; }
-        public string DateTimeFactRegist { get; set; }
-        public string DateTimeArrive { get; set; }
-        public string DateTimeLoad { get; set; }
-        public string DateTimeEndLoad { get; set; }
-        public string DateTimeLeft { get; set; }
+        public DateTime DateTimePlanRegist { get; set; }
+        public DateTime DateTimeFactRegist { get; set; }
+        public DateTime DateTimeArrive { get; set; }
+        public DateTime DateTimeLoad { get; set; }
+        public DateTime DateTimeEndLoad { get; set; }
+        public DateTime DateTimeLeft { get; set; }
 
         public string TextStatus { get; set; }
 
@@ -47,45 +45,44 @@ namespace Registrant.Models
             Family = shipment.IdDriverNavigation?.Family;
             Name = shipment.IdDriverNavigation?.Name;
             Patronymic = shipment.IdDriverNavigation?.Patronymic;
-            FIO = Family + " " + Name + " " + Patronymic;
+            FIO = $"{Family} {Name} {Patronymic}";
             Phone = shipment.IdDriverNavigation?.Phone;
 
             if (shipment.IdTimeNavigation.DateTimePlanRegist.HasValue)
             {
-                DateTimePlanRegist = shipment.IdTimeNavigation.DateTimePlanRegist.Value.ToString();
+                DateTimePlanRegist = shipment.IdTimeNavigation.DateTimePlanRegist.Value;
             }
 
             if (shipment.IdTimeNavigation.DateTimeFactRegist.HasValue)
             {
-                DateTimeFactRegist = shipment.IdTimeNavigation.DateTimeFactRegist.Value.ToString();
+                DateTimeFactRegist = shipment.IdTimeNavigation.DateTimeFactRegist.Value;
             }
 
             if (shipment.IdTimeNavigation.DateTimeArrive.HasValue)
             {
-                DateTimeArrive = shipment.IdTimeNavigation.DateTimeArrive.Value.ToString();
+                DateTimeArrive = shipment.IdTimeNavigation.DateTimeArrive.Value;
             }
 
             if (shipment.IdTimeNavigation.DateTimeArrive.HasValue)
             {
-                DateTimeArrive = shipment.IdTimeNavigation.DateTimeArrive.Value.ToString();
+                DateTimeArrive = shipment.IdTimeNavigation.DateTimeArrive.Value;
             }
             if (shipment.IdTimeNavigation.DateTimeLoad.HasValue)
             {
-                DateTimeLoad = shipment.IdTimeNavigation.DateTimeLoad.Value.ToString();
+                DateTimeLoad = shipment.IdTimeNavigation.DateTimeLoad.Value;
             }
             if (shipment.IdTimeNavigation.DateTimeEndLoad.HasValue)
             {
-                DateTimeEndLoad = shipment.IdTimeNavigation.DateTimeEndLoad.Value.ToString();
+                DateTimeEndLoad = shipment.IdTimeNavigation.DateTimeEndLoad.Value;
             }
             if (shipment.IdTimeNavigation.DateTimeLeft.HasValue)
             {
-                DateTimeLeft = shipment.IdTimeNavigation.DateTimeLeft.Value.ToString();
+                DateTimeLeft = shipment.IdTimeNavigation.DateTimeLeft.Value;
             }
-            
 
-            if (shipment.IdTimeNavigation?.DateTimeLeft != null)
+            if (shipment.IdTimeNavigation.DateTimeLeft != null)
             {
-                TextStatus = "Покинул склад (" + DateTimeLeft.ToString() + ")";
+                TextStatus = $"Покинул склад ({DateTimeLeft})";
                 if (App.LevelAccess == "admin" || App.LevelAccess == "warehouse")
                 {
                     btn_endload = "Collapsed";
@@ -99,7 +96,7 @@ namespace Registrant.Models
             }
             else if (shipment.IdTimeNavigation?.DateTimeLeft == null && shipment.IdTimeNavigation?.DateTimeEndLoad != null)
             {
-                TextStatus = "Отгрузка завершена (" + DateTimeEndLoad.ToString() + ")";
+                TextStatus = $"Отгрузка завершена ({DateTimeEndLoad})";
                 if (App.LevelAccess == "admin" || App.LevelAccess == "warehouse")
                 {
                     btn_endload = "Collapsed";
@@ -113,7 +110,7 @@ namespace Registrant.Models
             }
             else if (shipment.IdTimeNavigation?.DateTimeEndLoad == null && shipment.IdTimeNavigation?.DateTimeLoad != null)
             {
-                TextStatus = "Отгрузка (" + DateTimeLoad.ToString() + ")";
+                TextStatus = $"Отгрузка ({DateTimeLoad})";
                 if (App.LevelAccess == "admin" || App.LevelAccess == "warehouse")
                 {
                     btn_endload = "Visible";
@@ -127,7 +124,7 @@ namespace Registrant.Models
             }
             else if (shipment.IdTimeNavigation?.DateTimeLoad == null && shipment.IdTimeNavigation?.DateTimeArrive != null)
             {
-                TextStatus = "На территории склада (" + DateTimeArrive.ToString() + ")";
+                TextStatus = $"На территории склада ({DateTimeArrive})";
                 if (App.LevelAccess == "admin" || App.LevelAccess == "warehouse")
                 {
                     btn_endload = "Collapsed";
@@ -141,7 +138,7 @@ namespace Registrant.Models
             }
             else if (shipment.IdTimeNavigation?.DateTimeArrive == null && shipment.IdTimeNavigation?.DateTimeFactRegist != null)
             {
-                TextStatus = "Зарегистрирован (" + DateTimeFactRegist.ToString() + ")";
+                TextStatus = $"Зарегистрирован ({DateTimeFactRegist})";
                 if (App.LevelAccess == "admin" || App.LevelAccess == "warehouse")
                 {
                     btn_endload = "Collapsed";
@@ -162,7 +159,7 @@ namespace Registrant.Models
             }
             else if (shipment.IdTimeNavigation?.DateTimePlanRegist == null && shipment.IdTimeNavigation?.DateTimeFactRegist != null)
             {
-                TextStatus =  "Зарегистрирован (" + DateTimeFactRegist.ToString() + ")";
+                TextStatus = $"Зарегистрирован ({DateTimeFactRegist})";
                 btn_endload = "Collapsed";
                 btn_load = "Collapsed";
             }

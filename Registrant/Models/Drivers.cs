@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Registrant.Models
+﻿namespace Registrant.Models
 {
     public class Drivers
     {
@@ -17,7 +13,7 @@ namespace Registrant.Models
         public Drivers(DB.Driver driver)
         {
             IdDriver = driver.IdDriver;
-            FIO = driver.Family + " " + driver.Name + " " + driver.Patronymic;
+            FIO = $"{driver.Family} {driver.Name} {driver.Patronymic}";
             Phone = driver.Phone;
             Contragent = driver.IdContragentNavigation?.Name;
             Attorney = driver.Attorney;
