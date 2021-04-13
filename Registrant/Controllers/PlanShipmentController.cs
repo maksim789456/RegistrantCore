@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Windows;
 using Registrant.Models;
 
 namespace Registrant.Controllers
@@ -14,12 +16,15 @@ namespace Registrant.Controllers
             PlanShipments = new List<PlanShipment>();
         }
 
-        public List<PlanShipment> GetPlanShipments(DateTime date)
+        //Для кпп по датам
+        public List<Models.PlanShipment> GetPlanShipments(DateTime date)
         {
             PlanShipments.Clear();
             
-            using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+            date = date.Date;
+            try
             {
+                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                 var shipments = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date
                                                         && x.IdTimeNavigation.DateTimeFactRegist.Value == null);
                 foreach (var item in shipments)
@@ -27,6 +32,10 @@ namespace Registrant.Controllers
                     PlanShipment shipment = new PlanShipment(item);
                     PlanShipments.Add(shipment);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return PlanShipments;
         }

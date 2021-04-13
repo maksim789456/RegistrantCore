@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Registrant.Models;
+using System.Text;
+using System.Windows;
 
 namespace Registrant.Controllers
 {
@@ -14,11 +16,13 @@ namespace Registrant.Controllers
             DriverShipments = new List<KppShipments>();
         }
 
-        public List<KppShipments> GetShipments(DateTime date)
+        //Получение списка отгрузок для КПП
+        public List<Models.KPPShipments> GetShipments(DateTime date)
         {
             DriverShipments.Clear();
 
-            using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+            date = date.Date;
+            try
             {
                 //var temp = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date && x.IdTimeNavigation.DateTimeFactRegist.Value == null);
                 var shipments = ef.Shipments.Where(x => (x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date.Date) 
@@ -27,10 +31,15 @@ namespace Registrant.Controllers
                                                    && x.Active != "0");
                 
                 foreach (var item in shipments)
+                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                 {
                     KppShipments shipment = new KppShipments(item);
                     DriverShipments.Add(shipment);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return DriverShipments;
         }

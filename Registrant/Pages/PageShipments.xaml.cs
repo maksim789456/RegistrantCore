@@ -138,9 +138,9 @@ namespace Registrant.Pages
                         // Нашел
                     }
                 }
-                catch (Exception exception)
+                catch (Exception ex)
                 {
-                    MessageBox.Show(exception.Message, "Ошибка!");
+                    MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -164,13 +164,22 @@ namespace Registrant.Pages
                 MessageBoxResult? result = ModernWpf.MessageBox.Show("Сменить статус водителя " + current.FIO + " на Загрузка начата?", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                 {
-                    using (RegistrantCoreContext ef = new RegistrantCoreContext())
+
+                    try
                     {
                         var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
                         if (shipment != null) 
                             shipment.IdTimeNavigation.DateTimeLoad = DateTime.Now;
                         ef.SaveChanges();
+                        using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                        {
+                        }
                     }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    
                 }
             }
 
@@ -189,13 +198,22 @@ namespace Registrant.Pages
                     MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                 {
-                    using (RegistrantCoreContext ef = new RegistrantCoreContext())
+
+                    try
                     {
                         var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
                         if (shipment != null) 
                             shipment.IdTimeNavigation.DateTimeEndLoad = DateTime.Now;
                         ef.SaveChanges();
+                        using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                        {
+                        }
                     }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+
                 }
             }
 

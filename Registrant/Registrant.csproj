@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
     <PackageReference Include="FluentWPF" Version="0.9.0" />
+    <PackageReference Include="iTextSharp" Version="5.5.13.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="5.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.4" />
@@ -22,6 +23,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="ActualVer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ActualVer.txt</DependentUpon>
+    </Compile>
     <Compile Update="Settings\App.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
@@ -40,6 +46,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="ActualVer.txt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ActualVer.cs</LastGenOutput>
+    </None>
     <None Update="Settings\App.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>App.Designer.cs</LastGenOutput>
@@ -52,6 +62,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>User.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 
 </Project>

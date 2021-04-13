@@ -56,11 +56,7 @@ namespace Registrant.Pages
             }
         }
 
-        /// <summary>
         /// Кнопка закрытия диалогового окна с редактированием
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void btn_close_Click(object sender, RoutedEventArgs e)
         {
             ContentAddEdit.Hide();
@@ -68,11 +64,7 @@ namespace Registrant.Pages
             btn_add.Visibility = Visibility.Collapsed;
         }
 
-        /// <summary>
         /// Кнопка добавления водителя
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void btn_add_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -111,11 +103,7 @@ namespace Registrant.Pages
             }
         }
 
-        /// <summary>
         /// Кнопка открыть окно редактирования
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void btn_edit_Click(object sender, RoutedEventArgs e)
         {
             var bt = e.OriginalSource as Button;
@@ -127,9 +115,11 @@ namespace Registrant.Pages
             btn_delete.Visibility = Visibility.Visible;
             if (current != null)
             {
-                using (RegistrantCoreContext ef = new RegistrantCoreContext())
+                try
                 {
-                    var driver = ef.Drivers.FirstOrDefault(x => x.IdDriver == current.IdDriver);
+                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                    {
+                        var driver = ef.Drivers.FirstOrDefault(x => x.IdDriver == current.IdDriver);
 
                     if (driver != null)
                     {
@@ -153,14 +143,15 @@ namespace Registrant.Pages
                     }
                     ContentAddEdit.ShowAsync();
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
-        /// <summary>
+
         /// Кнлпка удалить
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void btn_delete_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -179,17 +170,13 @@ namespace Registrant.Pages
                     btn_refresh_Click(sender, e);
                 }
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                MessageBox.Show(exception.Message, "Ошибка!");
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        /// <summary>
         /// Кнопка добавить водителя
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void btn_add_driver_Click(object sender, RoutedEventArgs e)
         {
             ContentAddEdit.ShowAsync();
@@ -205,15 +192,14 @@ namespace Registrant.Pages
                     btn_delete.Visibility = Visibility.Collapsed;
                 }
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                MessageBox.Show(exception.Message, "Ошибка!");
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         /// <summary>
         /// Очистка
-        /// </summary>
         void ClearTextbox()
         {
             tb_id.Text = "";
@@ -229,11 +215,7 @@ namespace Registrant.Pages
             tb_info.Text = "";
         }
 
-        /// <summary>
         /// Непосредственное редактирование
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void btn_edit_Click1(object sender, RoutedEventArgs e)
         {
             try
@@ -268,23 +250,18 @@ namespace Registrant.Pages
                     btn_refresh_Click(sender, e);
                 }
             }
-            catch (Exception exception)
-            {
-                MessageBox.Show(exception.Message, "Ошибка!");
+                catch (Exception ex)
+                {
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        /// <summary>
         /// Закрытия окна с информацией
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void btn_info_close_Click(object sender, RoutedEventArgs e)
         {
             ContentInfo.Hide();
         }
 
-        /// <summary>
         /// Открыть окно с расширенной информацией
         /// </summary>
         /// <param name="sender"></param>
@@ -296,12 +273,20 @@ namespace Registrant.Pages
 
             if (current != null)
             {
-                using (RegistrantCoreContext ef = new RegistrantCoreContext())
+                try
                 {
-                    ContentInfo.ShowAsync();
-                    ContentInfoGrid.DataContext = ef.Drivers.FirstOrDefault(x => x.IdDriver == current.IdDriver);
-                    text_info_namedriver.Text = current.FIO;
+                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                    {
+                        ContentInfo.ShowAsync();
+                        ContentInfoGrid.DataContext = ef.Drivers.FirstOrDefault(x => x.IdDriver == current.IdDriver);
+                        text_info_namedriver.Text = current.FIO;
+                    }
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
             }
         }
         
@@ -335,9 +320,9 @@ namespace Registrant.Pages
                         // Нашел
                     }
                 }
-                catch (Exception exception)
+                catch (Exception ex)
                 {
-                    MessageBox.Show(exception.Message, "Ошибка!");
+                    MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -363,9 +348,9 @@ namespace Registrant.Pages
                    //var temp = ef.Shipments.Where(x => (x.IdTimeNavigation.DateTimeLeft > last30) && x.IdDriverNavigation.Active != "0" && x.IdTimeNavigation.DateTimeFactRegist.Value.Month == currentMonth.Month);
                 }
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                MessageBox.Show(exception.Message, "Ошибка!");
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

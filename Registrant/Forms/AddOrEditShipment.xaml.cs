@@ -8,9 +8,7 @@ namespace Registrant.Forms
 {
     public partial class AddOrEditShipment
     {
-        /// <summary>
         /// Новая отгрузка
-        /// </summary>
         public AddOrEditShipment()
         {
             InitializeComponent();
@@ -20,11 +18,7 @@ namespace Registrant.Forms
             LoadDriversBox();
         }
 
-        /// <summary>
         /// Выбор водителя
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void cb_drivers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cb_drivers.SelectedItem is Driver current)
@@ -42,9 +36,9 @@ namespace Registrant.Forms
                         }
                     }
                 }
-                catch (Exception exception)
+                catch (Exception ex)
                 {
-                    ModernWpf.MessageBox.Show(exception.Message, "Ошибка!");
+                    MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
@@ -56,16 +50,17 @@ namespace Registrant.Forms
             
         }
 
-        /// <summary>
         /// Подгрузка водителей
-        /// </summary>
         void LoadDriversBox()
         {
             try
             {
                 using (RegistrantCoreContext ef = new RegistrantCoreContext())
                 {
-                    cb_drivers.ItemsSource = ef.Drivers.Where(x => x.Active != "0").OrderBy(x => x.Family);
+                    Controllers.DriversController driver = new Controllers.DriversController();
+
+                    cb_drivers.ItemsSource = driver.GetDriversСurrent();
+
                 }
             }
             catch (Exception exception)
@@ -73,10 +68,10 @@ namespace Registrant.Forms
                 ModernWpf.MessageBox.Show(exception.Message, "Ошибка!");
             }
         }
-        /// <summary>
+
+
+
         /// Редактирование отгрузок
-        /// </summary>
-        /// <param name="id"></param>
         public AddOrEditShipment(int id)
         {
             InitializeComponent();
@@ -114,12 +109,21 @@ namespace Registrant.Forms
             {
                 using (RegistrantCoreContext ef = new RegistrantCoreContext())
                 {
-                    var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == id);
-                    
-                    if (shipment != null)
+                    var temp = ef.Shipments.FirstOrDefault(x => x.IdShipment == id);
+
+                    Controllers.DriversController driver = new Controllers.DriversController();
+
+                    cb_drivers.ItemsSource = driver.GetDriversСurrent((int)temp.IdDriver);
+                    cb_drivers.SelectedItem = driver.Driver.FirstOrDefault(x => x.IdDriver == temp.IdDriver);
+
+                    //ЗАПРЕТ НА РЕДАКТИРОВАНИЕ ЕСЛИ НАЧАЛАСЬ ЗАГРУЗКА
+                    if (temp.IdTimeNavigation.DateTimeLoad != null)
                     {
-                        cb_drivers.ItemsSource = ef.Drivers.Where(x => x.Active != "0" | x.IdDriver == shipment.IdDriver).OrderByDescending(x => x.Family).ToList();
-                        cb_drivers.SelectedItem = ef.Drivers.FirstOrDefault(x => x.IdDriver == shipment.IdDriver);
+                        if (App.LevelAccess != "admin")
+                        {
+                            cb_drivers.IsEnabled = false;
+                        }
+                    }
 
                         if (shipment.IdTimeNavigation.DateTimeLoad != null)
                         {
@@ -147,10 +151,7 @@ namespace Registrant.Forms
                     }
                 }
             }
-            catch (Exception exception)
-            {
-                ModernWpf.MessageBox.Show(exception.Message, "Ошибка!");
-            }
+            catch (Exception ex) { MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error); }
 
             if (dt_plan.Value != null)
             {
@@ -162,11 +163,8 @@ namespace Registrant.Forms
             }
         }
 
-        /// <summary>
         /// Кнопка редактировать
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+
         private void btn_edit_Click(object sender, RoutedEventArgs e)
         {
             if (App.LevelAccess == "shipment")
@@ -228,8 +226,7 @@ namespace Registrant.Forms
                 }
                 catch (Exception ex)
                 {
-
-                    MessageBox.Show(ex.ToString());
+                    MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else if (App.LevelAccess == "warehouse")
@@ -289,8 +286,9 @@ namespace Registrant.Forms
                 }
                 catch (Exception exception)
                 {
-                    ModernWpf.MessageBox.Show(exception.Message, "Ошибка!");
+                    MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+
             }
             else if (App.LevelAccess == "admin")
             {
@@ -379,21 +377,57 @@ namespace Registrant.Forms
                                                    $"{DateTime.Now} {App.ActiveUser} внес изменения в отгрузку";
                             ef.SaveChanges();
                         }
+                        if (tb_packetdoc.Text != null)
+                        {
+                            shipment.PacketDocuments = tb_packetdoc.Text;
+                        }
+                        if (tb_tochkaload.Text != null)
+                        {
+                            shipment.TochkaLoad = tb_tochkaload.Text;
+                        }
+                        if (tb_CountPodons.Text != null)
+                        {
+                            shipment.CountPodons = tb_CountPodons.Text;
+                        }
+                        if (tb_nomencluture.Text != null)
+                        {
+                            shipment.Nomenclature = tb_nomencluture.Text;
+                        }
+                        if (tb_size.Text != null)
+                        {
+                            shipment.Size = tb_size.Text;
+                        }
+                        if (tb_Destination.Text != null)
+                        {
+                            shipment.Destination = tb_Destination.Text;
+                        }
+                        if (tb_typeload.Text != null)
+                        {
+                            shipment.TypeLoad = tb_typeload.Text;
+                        }
+                        if (tb_descript.Text != null)
+                        {
+                            shipment.Description = tb_descript.Text;
+                        }
+                        if (tb_storekeeper.Text != null)
+                        {
+                            shipment.StoreKeeper = tb_storekeeper.Text;
+                        }
+
+                        shipment.Active = "1";
+                        shipment.ServiceInfo = shipment.ServiceInfo + "\n" + DateTime.Now + " " + App.ActiveUser + " внес изменения в отгрузку";
+                        ef.SaveChanges();
                         Close();
                     }
                 }
                 catch (Exception ex)
                 {
-                    ModernWpf.MessageBox.Show(ex.Message, "Ошибка!");
+                    MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
 
-        /// <summary>
         /// Добавить соответственно
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void btn_add_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -486,7 +520,7 @@ namespace Registrant.Forms
             }
             catch (Exception ex)
             {
-                ModernWpf.MessageBox.Show(ex.Message, "Ошибка!");
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Windows;
 using Registrant.Models;
 
 namespace Registrant.Controllers
@@ -19,7 +21,7 @@ namespace Registrant.Controllers
             Shipments.Clear();
 
             date = date.Date;
-            using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+            try
             {
                 var shipments = ef.Shipments.Where(x => ((x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date) && x.Active != "0")).OrderByDescending(x => x.IdTimeNavigation.DateTimePlanRegist);
                 foreach (var item in shipments)
@@ -27,6 +29,10 @@ namespace Registrant.Controllers
                     Shipments shipment = new Shipments(item);
                     Shipments.Add(shipment);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return Shipments;
         }
@@ -38,7 +44,7 @@ namespace Registrant.Controllers
         public List<Shipments> GetShipmentsAll()
         {
             Shipments.Clear();
-            using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+            try
             {
                 var shipments = ef.Shipments.OrderByDescending(x => x.IdTimeNavigation.DateTimePlanRegist);
                 foreach (var item in shipments)
@@ -46,6 +52,10 @@ namespace Registrant.Controllers
                     Shipments shipment = new Shipments(item);
                     Shipments.Add(shipment);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return Shipments;
         }
@@ -58,17 +68,23 @@ namespace Registrant.Controllers
         {
             Shipments.Clear();
 
-            using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+            date = date.Date;
+            try
             {
                 var shipments = ef.Shipments.Where(x => (x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date.Date) 
                                                    && x.IdTimeNavigation.DateTimeLeft == null 
                                                    && x.IdTimeNavigation.DateTimeArrive == null && x.Active != "0")
                     .OrderByDescending(x => x.IdTimeNavigation.DateTimePlanRegist);
                 foreach (var item in shipments)
+                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                 {
                     Shipments shipment = new Shipments(item);
                     Shipments.Add(shipment);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return Shipments;
         }
@@ -82,7 +98,8 @@ namespace Registrant.Controllers
         {
             Shipments.Clear();
 
-            using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+            date = date.Date;
+            try
             {
                 var shipments = ef.Shipments.Where(x => (x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date.Date) 
                                                    && x.IdTimeNavigation.DateTimeArrive != null 
@@ -90,10 +107,15 @@ namespace Registrant.Controllers
                                                    && x.Active != "0")
                     .OrderByDescending(x => x.IdTimeNavigation.DateTimePlanRegist);
                 foreach (var item in shipments)
+                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                 {
                     Shipments shipment = new Shipments(item);
                     Shipments.Add(shipment);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return Shipments;
         }
@@ -105,18 +127,23 @@ namespace Registrant.Controllers
         public List<Shipments> GetShipmentsLeft(DateTime date)
         {
             Shipments.Clear();
-
-            using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+            date = date.Date;
+            try
             {
                 var shipments = ef.Shipments.Where(x => (x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date.Date) 
                                                         && x.IdTimeNavigation.DateTimeLeft != null 
                                                         && x.Active != "0")
                     .OrderByDescending(x => x.IdTimeNavigation.DateTimePlanRegist);
                 foreach (var item in shipments)
+                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                 {
                     Shipments shipment = new Shipments(item);
                     Shipments.Add(shipment);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return Shipments;
         }

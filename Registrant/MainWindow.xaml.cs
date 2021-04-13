@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
@@ -9,44 +11,38 @@ namespace Registrant
 {
     public partial class MainWindow 
     {
+        //Чтобы потом обратится при нажатие на кнопку
         Pages.PageContragents pageContragents;
         Pages.PageKPP pageKPP;
         Pages.PageDrivers pageDrivers;
         Pages.PageShipments pageShipments;
         Pages.PageUser pageUser;
+        Pages.PageAdmin pageAdmin;
 
         public MainWindow()
         {
             InitializeComponent();
 
-           //Подгрузка данных из настроек
+            //Подгрузка данных из настроек
             tb_login.Text = Settings.User.Default.login;
-            //В проде убрать нижнее
-            tb_password.Password = Settings.User.Default.password;
+            text_verson.Text = Settings.App.Default.AppVersion;
 
             //Поток наа 1 старт чтобы при старте не тормозилось
-            Thread thread = new Thread(TestConnect);
+            Thread thread = new Thread(CheckForUpdates);
             thread.Start();
         }
 
         /// <summary>
         /// Открытие дебага
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void btn_debug_Click(object sender, RoutedEventArgs e)
         {
             text_error.Visibility = Visibility.Visible;
         }
 
-        /// <summary>
-        /// Кнопка повторить попытку соединения
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        
+        //Кнопка повторить попытку
         private void btn_tryconnect_Click(object sender, RoutedEventArgs e)
         {
-            btn_tryconnect.Visibility = Visibility.Collapsed;
             ContentError.Hide();
             Thread thread1 = new Thread(TestConnect);
             thread1.Start();
@@ -54,7 +50,6 @@ namespace Registrant
 
         /// <summary>
         /// Проверка существует ли вообще подключение к серверу
-        /// </summary>
         void TestConnect()
         {
             Thread.Sleep(2000);
@@ -77,28 +72,17 @@ namespace Registrant
             }
         }
 
-        /// <summary>
         /// Кнопка с редактированием настроек подключения
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void btn_opensettings_Click(object sender, RoutedEventArgs e)
         {
             Forms.EditConnect edit = new Forms.EditConnect();
             edit.ShowDialog();
         }
 
-        /// <summary>
         /// Действие на нажатие на кнопку Войти
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void btn_enter_Click(object sender, RoutedEventArgs e)
         {
             Settings.User.Default.login = tb_login.Text;
-
-            //TODO: В проде убрать! --- сохранение паролей
-            Settings.User.Default.password = tb_password.Password;
             Settings.User.Default.Save();
 
             try
@@ -120,15 +104,15 @@ namespace Registrant
 
                 }
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                MessageBox.Show(exception.Message, "Ошибка!");
+                Dispatcher.Invoke(() => ContentWait.Hide());
+                Dispatcher.Invoke(() => ContentError.ShowAsync());
+                Dispatcher.Invoke(() => text_error.Text = ex.ToString());
             }
         }
 
-        /// <summary>
         /// Проверяем кто он по масти
-        /// </summary>
         void Verify()
         {
             switch (App.LevelAccess)
@@ -141,23 +125,20 @@ namespace Registrant
                     nav_jurnalshipment.Visibility = Visibility.Visible;
                     nav_userset.Visibility = Visibility.Visible;
 
-                    pageKPP = new Pages.PageKPP();
-                    pageContragents = new Pages.PageContragents();
-                    pageDrivers = new Pages.PageDrivers();
-                    pageShipments = new Pages.PageShipments();
-                    break;
-                case "reader":
-                    nav_drivers.Visibility = Visibility.Visible;
-                    nav_jurnalshipment.Visibility = Visibility.Visible;
-                    nav_userset.Visibility = Visibility.Visible;
+                //Иниципализация нужных страниц под ролей
+                pageKPP = new Pages.PageKPP();
+                pageContragents = new Pages.PageContragents();
+                pageDrivers = new Pages.PageDrivers();
+                pageShipments = new Pages.PageShipments();
+                pageAdmin = new Pages.PageAdmin();
 
-                    pageDrivers = new Pages.PageDrivers();
-                    pageShipments = new Pages.PageShipments();
-                    break;
-                case "warehouse":
-                    nav_drivers.Visibility = Visibility.Visible;
-                    nav_jurnalshipment.Visibility = Visibility.Visible;
-                    nav_userset.Visibility = Visibility.Visible;
+                FrameContent.Content = pageShipments;
+            }
+            else if (App.LevelAccess == "reader")
+            {
+                nav_drivers.Visibility = Visibility.Visible;
+                nav_jurnalshipment.Visibility = Visibility.Visible;
+                nav_userset.Visibility = Visibility.Visible;
 
                     pageContragents = new Pages.PageContragents();
                     pageDrivers = new Pages.PageDrivers();
@@ -169,15 +150,72 @@ namespace Registrant
                     nav_drivers.Visibility = Visibility.Visible;
                     nav_userset.Visibility = Visibility.Visible;
 
-                    pageContragents = new Pages.PageContragents();
-                    pageDrivers = new Pages.PageDrivers();
-                    pageShipments = new Pages.PageShipments();
-                    break;
-                case "kpp":
-                    nav_jurnalkpp.Visibility = Visibility.Visible;
-                    nav_userset.Visibility = Visibility.Visible;
-                    pageKPP = new Pages.PageKPP();
-                    break;
+                FrameContent.Content = pageShipments;
+            }
+            else if (App.LevelAccess == "warehouse")
+            {
+                nav_drivers.Visibility = Visibility.Visible;
+                nav_jurnalshipment.Visibility = Visibility.Visible;
+                nav_userset.Visibility = Visibility.Visible;
+
+                pageContragents = new Pages.PageContragents();
+                pageDrivers = new Pages.PageDrivers();
+                pageShipments = new Pages.PageShipments();
+
+                FrameContent.Content = pageShipments;
+
+            }
+            else if (App.LevelAccess == "shipment")
+            {
+                nav_jurnalshipment.Visibility = Visibility.Visible;
+                nav_contragents.Visibility = Visibility.Visible;
+                nav_drivers.Visibility = Visibility.Visible;
+                nav_userset.Visibility = Visibility.Visible;
+
+                pageContragents = new Pages.PageContragents();
+                pageDrivers = new Pages.PageDrivers();
+                pageShipments = new Pages.PageShipments();
+
+                FrameContent.Content = pageShipments;
+            }
+            else if (App.LevelAccess == "kpp")
+            {
+                nav_jurnalkpp.Visibility = Visibility.Visible;
+                nav_userset.Visibility = Visibility.Visible;
+                pageKPP = new Pages.PageKPP();
+
+                FrameContent.Content = pageKPP;
+            }
+        }
+
+        void CheckForUpdates()
+        {
+            WebClient web = new WebClient();
+            try
+            {
+                string Act = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualVer.txt");
+                string ActualText = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualTextDesc.txt");
+                Act = Act.Replace("\n", "");
+
+                decimal Current = decimal.Parse(Settings.App.Default.AppVersion);
+                decimal Actual = decimal.Parse(Act);
+
+                if (Actual > Current)
+                {
+                    Dispatcher.Invoke(() => ContentUpdate);
+                    Dispatcher.Invoke(() => txt_currver.Text = Current.ToString());
+                    Dispatcher.Invoke(() => txt_newver.Text = Act.ToString());
+                    Dispatcher.Invoke(() => txt_desc.Text = ActualText);
+                }
+                else
+                {
+                    TestConnect();
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke(() => txt_desc.Text = "");
+                TestConnect();
             }
         }
 
@@ -203,7 +241,7 @@ namespace Registrant
 
         private void nav_admin_MouseDown(object sender, MouseButtonEventArgs e)
         {
-
+            FrameContent.Content = pageAdmin;
         }
 
         private void AcrylicWindow_Closed(object sender, EventArgs e)
@@ -214,6 +252,16 @@ namespace Registrant
         private void nav_userset_MouseDown(object sender, MouseButtonEventArgs e)
         {
             FrameContent.Content = pageUser;
+        }
+
+        private void btn_about_close_Click(object sender, RoutedEventArgs e)
+        {
+            ContentAppVer.Hide();
+        }
+
+        private void nav_aboutpo_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            ContentAppVer.ShowAsync();
         }
     }
 }

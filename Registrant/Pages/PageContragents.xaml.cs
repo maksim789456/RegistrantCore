@@ -38,7 +38,7 @@ namespace Registrant.Pages
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Упс.. Что-то пошло не так\n\nВозможно произошел разрыв соединения с сервером\n\nОтладочная информация\n" + ex.Message, "Ошибка при выполнении кода", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -86,9 +86,11 @@ namespace Registrant.Pages
 
             if (current != null)
             {
+                try
                 text_editnamecontragent.Text = $"Редактирование элемента {current.Name}";
-                using (RegistrantCoreContext ef = new RegistrantCoreContext())
                 {
+                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                    {
                     var contragent = ef.Contragents.FirstOrDefault(x => x.IdContragent == current.IdContragent);
                     if (contragent != null)
                     {
@@ -96,6 +98,11 @@ namespace Registrant.Pages
                         tb_edit_name.Text = contragent.Name.ToString();
                     }
                     ContentEdit.ShowAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -123,7 +130,7 @@ namespace Registrant.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Упс.. Что-то пошло не так\n\nВозможно произошел разрыв соединения с сервером\n\nОтладочная информация\n"+ ex.Message, "Ошибка при выполнении кода", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -143,7 +150,7 @@ namespace Registrant.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Упс.. Что-то пошло не так\n\nВозможно произошел разрыв соединения с сервером\n\nОтладочная информация\n" + ex.Message, "Ошибка при выполнении кода", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -177,9 +184,9 @@ namespace Registrant.Pages
                     ContentAdd.Hide();
                 }
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                MessageBox.Show("Упс.. Что-то пошло не так\n\nВозможно произошел разрыв соединения с сервером\n\nОтладочная информация\n" + exception.Message, "Ошибка при выполнении кода", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -216,9 +223,9 @@ namespace Registrant.Pages
                     ContentEdit.Hide();
                 }
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                MessageBox.Show("Упс.. Что-то пошло не так\n\nВозможно произошел разрыв соединения с сервером\n\nОтладочная информация\n" + exception.Message, "Ошибка при выполнении кода", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -247,6 +254,8 @@ namespace Registrant.Pages
 
             if (current != null)
             {
+
+                try
                 using (RegistrantCoreContext ef = new RegistrantCoreContext())
                 {
                     var contragent = ef.Contragents.FirstOrDefault(x => x.IdContragent == current.IdContragent);
@@ -255,6 +264,10 @@ namespace Registrant.Pages
                         text_namecontragent.Text = contragent.Name;
                         text_infocontragent.Text = contragent.ServiceInfo;
                     }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }

@@ -12,7 +12,8 @@ namespace Registrant.Pages
             InitializeComponent();
 
             tb_refresher.Text = Settings.App.Default.RefreshContent.ToString();
-            using (RegistrantCoreContext ef = new RegistrantCoreContext())
+
+            try
             {
                 var user = ef.Users.FirstOrDefault(x => x.IdUser == id);
                 if (user != null)
@@ -23,6 +24,10 @@ namespace Registrant.Pages
                     tb_login.Text = user.Login;
                     tb_role.Text = user.LevelAccess;
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -60,6 +65,12 @@ namespace Registrant.Pages
         private void btn_close_Click(object sender, RoutedEventArgs e)
         {
             ContentSave.Hide();
+        }
+
+        private void btn_edit_connectstring_Click(object sender, RoutedEventArgs e)
+        {
+            Forms.EditConnect edit = new Forms.EditConnect();
+            edit.ShowDialog();
         }
     }
 }
