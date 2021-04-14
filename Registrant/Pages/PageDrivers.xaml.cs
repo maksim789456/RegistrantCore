@@ -97,9 +97,10 @@ namespace Registrant.Pages
                     btn_close_Click(sender, e);
                 }
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                MessageBox.Show(exception.Message, "Ошибка!");
+                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
             }
         }
 
@@ -145,7 +146,8 @@ namespace Registrant.Pages
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
                 }
             }
         }
@@ -172,7 +174,8 @@ namespace Registrant.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
+                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
             }
         }
 
@@ -194,7 +197,8 @@ namespace Registrant.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
+                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
             }
         }
 
@@ -252,7 +256,8 @@ namespace Registrant.Pages
             }
                 catch (Exception ex)
                 {
-                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
+                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
             }
         }
 
@@ -284,7 +289,8 @@ namespace Registrant.Pages
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
                 }
 
             }
@@ -322,7 +328,8 @@ namespace Registrant.Pages
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
                 }
             }
         }
@@ -350,7 +357,8 @@ namespace Registrant.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
+                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
             }
         }
     }

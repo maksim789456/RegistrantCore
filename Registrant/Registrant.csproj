@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="img\icon_auth.png" />
+    <None Remove="img\icon_connect.png" />
+    <None Remove="img\icon_error2.png" />
+    <None Remove="img\icon_flash.png" />
+    <None Remove="img\icon_info.png" />
+    <None Remove="img\info_error.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
     <PackageReference Include="FluentWPF" Version="0.9.0" />
     <PackageReference Include="iTextSharp" Version="5.5.13.2" />
@@ -23,11 +32,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="ActualVer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ActualVer.txt</DependentUpon>
-    </Compile>
+    <Resource Include="img\icon_auth.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icon_connect.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icon_error2.png" />
+    <Resource Include="img\icon_flash.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\icon_info.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\info_error.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Settings\App.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
@@ -47,8 +70,6 @@
 
   <ItemGroup>
     <None Update="ActualVer.txt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ActualVer.cs</LastGenOutput>
     </None>
     <None Update="Settings\App.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

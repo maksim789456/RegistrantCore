@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -196,16 +198,30 @@ namespace Registrant
                 string Act = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualVer.txt");
                 string ActualText = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualTextDesc.txt");
                 Act = Act.Replace("\n", "");
+                Act = Act.Replace(".", ",");
 
-                decimal Current = decimal.Parse(Settings.App.Default.AppVersion);
+                string currentstring = Settings.App.Default.AppVersion;
+                currentstring = currentstring.Replace(".", ",");
+                decimal Current = decimal.Parse(currentstring);
                 decimal Actual = decimal.Parse(Act);
 
                 if (Actual > Current)
                 {
-                    Dispatcher.Invoke(() => ContentUpdate);
+                    Dispatcher.Invoke(() => ContentUpdate.ShowAsync());
                     Dispatcher.Invoke(() => txt_currver.Text = Current.ToString());
                     Dispatcher.Invoke(() => txt_newver.Text = Act.ToString());
                     Dispatcher.Invoke(() => txt_desc.Text = ActualText);
+
+                    string CanRefuse = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualVerCanRefuse.txt");
+                    CanRefuse= CanRefuse.Replace("\n", "");
+
+                    if (CanRefuse == "No")
+                    {
+                        Dispatcher.Invoke(() => btn_updatelate.Visibility = Visibility.Hidden);
+                        Dispatcher.Invoke(() => txt_desc.Text = txt_desc.Text + "\n\nЭто обновление нельзя отложить, т.к. содержит\nкритические правки в коде");
+                        Dispatcher.Invoke(() => ContentUpdate.Background = new SolidColorBrush(Color.FromRgb(255, 140, 140)));
+                    }
+
                 }
                 else
                 {
@@ -214,6 +230,7 @@ namespace Registrant
             }
             catch (Exception ex)
             {
+                //MessageBox.Show(ex.ToString());
                 Dispatcher.Invoke(() => txt_desc.Text = "");
                 TestConnect();
             }
@@ -262,6 +279,24 @@ namespace Registrant
         private void nav_aboutpo_MouseDown(object sender, MouseButtonEventArgs e)
         {
             ContentAppVer.ShowAsync();
+        }
+
+        private void btn_updatenow_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("CoreUpdater.exe");
+            Environment.Exit(0);
+        }
+
+        private void btn_updatelate_Click(object sender, RoutedEventArgs e)
+        {
+            ContentUpdate.Hide();
+            Thread thread = new Thread(TestConnect);
+            thread.Start();
+        }
+
+        private void btn_debugger_close_Click(object sender, RoutedEventArgs e)
+        {
+            ContentErrorText.Hide();
         }
     }
 }
