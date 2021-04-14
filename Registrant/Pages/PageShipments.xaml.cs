@@ -168,13 +168,11 @@ namespace Registrant.Pages
 
                     try
                     {
+                        using RegistrantCoreContext ef = new RegistrantCoreContext();
                         var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
                         if (shipment != null) 
                             shipment.IdTimeNavigation.DateTimeLoad = DateTime.Now;
                         ef.SaveChanges();
-                        using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
-                        {
-                        }
                     }
                     catch (Exception ex)
                     {
@@ -200,23 +198,19 @@ namespace Registrant.Pages
                     MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                 {
-
                     try
                     {
+                        using RegistrantCoreContext ef = new RegistrantCoreContext();
                         var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
                         if (shipment != null) 
                             shipment.IdTimeNavigation.DateTimeEndLoad = DateTime.Now;
                         ef.SaveChanges();
-                        using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
-                        {
-                        }
                     }
                     catch (Exception ex)
                     {
                         ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
                         ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
                     }
-
                 }
             }
 

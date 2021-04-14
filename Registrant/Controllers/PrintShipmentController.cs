@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using Registrant.Models;
 
 namespace Registrant.Controllers
@@ -18,9 +19,11 @@ namespace Registrant.Controllers
         {
             PlanShipments.Clear();
 
-            using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+            try
             {
-                var shipments = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date);
+                using DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext();
+                var shipments =
+                    ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date);
                 foreach (var item in shipments)
                 {
                     PrintShipments shipment = new PrintShipments(item);
@@ -29,8 +32,12 @@ namespace Registrant.Controllers
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
             return PlanShipments;
         }
@@ -39,9 +46,11 @@ namespace Registrant.Controllers
         {
             PlanShipments.Clear();
 
-            using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+            try
             {
-                var shipments = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Month == date.Month);
+                using DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext();
+                var shipments =
+                    ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Month == date.Month);
                 foreach (var item in shipments)
                 {
                     PrintShipments shipment = new PrintShipments(item);
@@ -50,9 +59,14 @@ namespace Registrant.Controllers
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
+
             return PlanShipments;
         }
     }

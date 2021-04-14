@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
+using Registrant.DB;
 using Registrant.Models;
 
 namespace Registrant.Controllers
@@ -20,10 +20,14 @@ namespace Registrant.Controllers
         {
             Shipments.Clear();
 
-            date = date.Date;
             try
             {
-                var shipments = ef.Shipments.Where(x => ((x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date) && x.Active != "0")).OrderByDescending(x => x.IdTimeNavigation.DateTimePlanRegist);
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                var shipments = ef.Shipments.Where(x => 
+                        (x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date.Date) 
+                                                        && x.Active != "0")
+                    .OrderByDescending(x => x.IdTimeNavigation.DateTimePlanRegist);
+                
                 foreach (var item in shipments)
                 {
                     Shipments shipment = new Shipments(item);
@@ -32,8 +36,12 @@ namespace Registrant.Controllers
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
             return Shipments;
         }
@@ -45,8 +53,10 @@ namespace Registrant.Controllers
         public List<Shipments> GetShipmentsAll()
         {
             Shipments.Clear();
+            
             try
             {
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
                 var shipments = ef.Shipments.OrderByDescending(x => x.IdTimeNavigation.DateTimePlanRegist);
                 foreach (var item in shipments)
                 {
@@ -56,8 +66,12 @@ namespace Registrant.Controllers
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
             return Shipments;
         }
@@ -70,15 +84,15 @@ namespace Registrant.Controllers
         {
             Shipments.Clear();
 
-            date = date.Date;
             try
             {
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
                 var shipments = ef.Shipments.Where(x => (x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date.Date) 
                                                    && x.IdTimeNavigation.DateTimeLeft == null 
                                                    && x.IdTimeNavigation.DateTimeArrive == null && x.Active != "0")
                     .OrderByDescending(x => x.IdTimeNavigation.DateTimePlanRegist);
+                
                 foreach (var item in shipments)
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                 {
                     Shipments shipment = new Shipments(item);
                     Shipments.Add(shipment);
@@ -86,8 +100,12 @@ namespace Registrant.Controllers
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
             return Shipments;
         }
@@ -101,16 +119,16 @@ namespace Registrant.Controllers
         {
             Shipments.Clear();
 
-            date = date.Date;
             try
             {
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
                 var shipments = ef.Shipments.Where(x => (x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date.Date) 
                                                    && x.IdTimeNavigation.DateTimeArrive != null 
                                                    && x.IdTimeNavigation.DateTimeLeft == null 
                                                    && x.Active != "0")
                     .OrderByDescending(x => x.IdTimeNavigation.DateTimePlanRegist);
+                
                 foreach (var item in shipments)
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                 {
                     Shipments shipment = new Shipments(item);
                     Shipments.Add(shipment);
@@ -118,8 +136,12 @@ namespace Registrant.Controllers
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
             return Shipments;
         }
@@ -131,15 +153,16 @@ namespace Registrant.Controllers
         public List<Shipments> GetShipmentsLeft(DateTime date)
         {
             Shipments.Clear();
-            date = date.Date;
+
             try
             {
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
                 var shipments = ef.Shipments.Where(x => (x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date.Date) 
                                                         && x.IdTimeNavigation.DateTimeLeft != null 
                                                         && x.Active != "0")
                     .OrderByDescending(x => x.IdTimeNavigation.DateTimePlanRegist);
+                
                 foreach (var item in shipments)
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                 {
                     Shipments shipment = new Shipments(item);
                     Shipments.Add(shipment);
@@ -147,8 +170,12 @@ namespace Registrant.Controllers
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
             return Shipments;
         }

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using MessageBox = ModernWpf.MessageBox;
 
 namespace Registrant
@@ -127,24 +129,35 @@ namespace Registrant
                     nav_jurnalshipment.Visibility = Visibility.Visible;
                     nav_userset.Visibility = Visibility.Visible;
 
-                //Иниципализация нужных страниц под ролей
-                pageKPP = new Pages.PageKPP();
-                pageContragents = new Pages.PageContragents();
-                pageDrivers = new Pages.PageDrivers();
-                pageShipments = new Pages.PageShipments();
-                pageAdmin = new Pages.PageAdmin();
+                    //Иниципализация нужных страниц под ролей
+                    pageKPP = new Pages.PageKPP();
+                    pageContragents = new Pages.PageContragents();
+                    pageDrivers = new Pages.PageDrivers();
+                    pageShipments = new Pages.PageShipments();
+                    pageAdmin = new Pages.PageAdmin();
 
-                FrameContent.Content = pageShipments;
-            }
-            else if (App.LevelAccess == "reader")
-            {
-                nav_drivers.Visibility = Visibility.Visible;
-                nav_jurnalshipment.Visibility = Visibility.Visible;
-                nav_userset.Visibility = Visibility.Visible;
+                    FrameContent.Content = pageShipments;
+                    break;
+                case "reader":
+                    nav_drivers.Visibility = Visibility.Visible;
+                    nav_jurnalshipment.Visibility = Visibility.Visible;
+                    nav_userset.Visibility = Visibility.Visible;
+
+                    pageDrivers = new Pages.PageDrivers();
+                    pageShipments = new Pages.PageShipments();
+
+                    FrameContent.Content = pageShipments;
+                    break;
+                case "warehouse":
+                    nav_drivers.Visibility = Visibility.Visible;
+                    nav_jurnalshipment.Visibility = Visibility.Visible;
+                    nav_userset.Visibility = Visibility.Visible;
 
                     pageContragents = new Pages.PageContragents();
                     pageDrivers = new Pages.PageDrivers();
                     pageShipments = new Pages.PageShipments();
+
+                    FrameContent.Content = pageShipments;
                     break;
                 case "shipment":
                     nav_jurnalshipment.Visibility = Visibility.Visible;
@@ -152,41 +165,19 @@ namespace Registrant
                     nav_drivers.Visibility = Visibility.Visible;
                     nav_userset.Visibility = Visibility.Visible;
 
-                FrameContent.Content = pageShipments;
-            }
-            else if (App.LevelAccess == "warehouse")
-            {
-                nav_drivers.Visibility = Visibility.Visible;
-                nav_jurnalshipment.Visibility = Visibility.Visible;
-                nav_userset.Visibility = Visibility.Visible;
+                    pageContragents = new Pages.PageContragents();
+                    pageDrivers = new Pages.PageDrivers();
+                    pageShipments = new Pages.PageShipments();
 
-                pageContragents = new Pages.PageContragents();
-                pageDrivers = new Pages.PageDrivers();
-                pageShipments = new Pages.PageShipments();
+                    FrameContent.Content = pageShipments;
+                    break;
+                case "kpp":
+                    nav_jurnalkpp.Visibility = Visibility.Visible;
+                    nav_userset.Visibility = Visibility.Visible;
+                    pageKPP = new Pages.PageKPP();
 
-                FrameContent.Content = pageShipments;
-
-            }
-            else if (App.LevelAccess == "shipment")
-            {
-                nav_jurnalshipment.Visibility = Visibility.Visible;
-                nav_contragents.Visibility = Visibility.Visible;
-                nav_drivers.Visibility = Visibility.Visible;
-                nav_userset.Visibility = Visibility.Visible;
-
-                pageContragents = new Pages.PageContragents();
-                pageDrivers = new Pages.PageDrivers();
-                pageShipments = new Pages.PageShipments();
-
-                FrameContent.Content = pageShipments;
-            }
-            else if (App.LevelAccess == "kpp")
-            {
-                nav_jurnalkpp.Visibility = Visibility.Visible;
-                nav_userset.Visibility = Visibility.Visible;
-                pageKPP = new Pages.PageKPP();
-
-                FrameContent.Content = pageKPP;
+                    FrameContent.Content = pageKPP;
+                    break;
             }
         }
 
@@ -195,33 +186,32 @@ namespace Registrant
             WebClient web = new WebClient();
             try
             {
-                string Act = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualVer.txt");
-                string ActualText = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualTextDesc.txt");
-                Act = Act.Replace("\n", "");
-                Act = Act.Replace(".", ",");
+                string act = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualVer.txt");
+                string actualText = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualTextDesc.txt");
+                act = act.Replace("\n", "");
+                act = act.Replace(".", ",");
 
-                string currentstring = Settings.App.Default.AppVersion;
-                currentstring = currentstring.Replace(".", ",");
-                decimal Current = decimal.Parse(currentstring);
-                decimal Actual = decimal.Parse(Act);
+                string currentVersion = Settings.App.Default.AppVersion;
+                currentVersion = currentVersion.Replace(".", ",");
+                decimal current = decimal.Parse(currentVersion);
+                decimal actual = decimal.Parse(act);
 
-                if (Actual > Current)
+                if (actual > current)
                 {
                     Dispatcher.Invoke(() => ContentUpdate.ShowAsync());
-                    Dispatcher.Invoke(() => txt_currver.Text = Current.ToString());
-                    Dispatcher.Invoke(() => txt_newver.Text = Act.ToString());
-                    Dispatcher.Invoke(() => txt_desc.Text = ActualText);
+                    Dispatcher.Invoke(() => txt_currver.Text = current.ToString(CultureInfo.CurrentCulture));
+                    Dispatcher.Invoke(() => txt_newver.Text = act.ToString());
+                    Dispatcher.Invoke(() => txt_desc.Text = actualText);
 
-                    string CanRefuse = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualVerCanRefuse.txt");
-                    CanRefuse= CanRefuse.Replace("\n", "");
+                    string canRefuse = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualVerCanRefuse.txt");
+                    canRefuse = canRefuse.Replace("\n", "");
 
-                    if (CanRefuse == "No")
+                    if (canRefuse == "No")
                     {
                         Dispatcher.Invoke(() => btn_updatelate.Visibility = Visibility.Hidden);
                         Dispatcher.Invoke(() => txt_desc.Text = txt_desc.Text + "\n\nЭто обновление нельзя отложить, т.к. содержит\nкритические правки в коде");
                         Dispatcher.Invoke(() => ContentUpdate.Background = new SolidColorBrush(Color.FromRgb(255, 140, 140)));
                     }
-
                 }
                 else
                 {

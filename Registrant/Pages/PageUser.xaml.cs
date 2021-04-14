@@ -15,6 +15,7 @@ namespace Registrant.Pages
 
             try
             {
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
                 var user = ef.Users.FirstOrDefault(x => x.IdUser == id);
                 if (user != null)
                 {
@@ -35,31 +36,37 @@ namespace Registrant.Pages
         {
             if (tb_login.Text != "")
             {
-                using (RegistrantCoreContext ef = new RegistrantCoreContext())
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                var user = ef.Users.FirstOrDefault(x => x.IdUser == Convert.ToInt32(tb_id.Text));
+
+                if (tb_pass.Text == user?.Password)
                 {
-                    var user = ef.Users.FirstOrDefault(x => x.IdUser == Convert.ToInt32(tb_id.Text));
+                    user.Login = tb_login.Text;
+                    user.Password = tb_passnew.Text;
+                    ef.SaveChanges();
+                    ContentSave.ShowAsync();
 
-                    if (tb_pass.Text == user?.Password)
+                    tb_pass.Text = "";
+                    tb_passnew.Text = "";
+                }
+                else
+                {
+                    MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                    if (mainWindow != null)
                     {
-                        user.Login = tb_login.Text;
-                        user.Password = tb_passnew.Text;
-                        ef.SaveChanges();
-                        ContentSave.ShowAsync();
-
-                        tb_pass.Text = "";
-                        tb_passnew.Text = "";
-                    }
-                    else
-                    {
-                        ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                        ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = "Пароль не совпадает со старым";
+                        mainWindow.ContentErrorText.ShowAsync();
+                        mainWindow.text_debuger.Text = "Пароль не совпадает со старым";
                     }
                 }
             }
             else
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = "Новый логин не должен быть пустым";
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = "Новый логин не должен быть пустым";
+                }
             }
 
         }

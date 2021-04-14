@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using Registrant.Models;
 
@@ -17,16 +16,17 @@ namespace Registrant.Controllers
         }
 
         //Для кпп по датам
-        public List<Models.PlanShipment> GetPlanShipments(DateTime date)
+        public List<PlanShipment> GetPlanShipments(DateTime date)
         {
             PlanShipments.Clear();
             
             date = date.Date;
             try
             {
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
-                var shipments = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date
-                                                        && x.IdTimeNavigation.DateTimeFactRegist.Value == null);
+                using DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext();
+                var shipments = ef.Shipments.Where(x =>
+                    x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date
+                    && x.IdTimeNavigation.DateTimeFactRegist.Value == null);
                 foreach (var item in shipments)
                 {
                     PlanShipment shipment = new PlanShipment(item);
@@ -35,8 +35,12 @@ namespace Registrant.Controllers
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
             return PlanShipments;
         }

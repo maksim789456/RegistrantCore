@@ -50,7 +50,6 @@ namespace CoreUpdater
                 Console.ReadKey();
                 Console.ReadKey();
             }
-
         }
 
         public static void DownloadPackage()
@@ -93,7 +92,7 @@ namespace CoreUpdater
             Console.WriteLine("{0} > закрыть это окно, это может привести к сбою обновления и может откразится на", DateTime.Now);
             Console.WriteLine("{0} > работе программы", DateTime.Now);
             Console.WriteLine("");
-            Console.WriteLine("{0} > Убедитесь, что  RegistrantCore сейчас закрыт", DateTime.Now);
+            Console.WriteLine("{0} > Убедитесь, что RegistrantCore сейчас закрыт", DateTime.Now);
             Console.WriteLine("{0} > Ожидание", DateTime.Now);
             Thread.Sleep(3000);
             try
@@ -118,7 +117,6 @@ namespace CoreUpdater
     }
     public static class ZipArchiveExtensions
     {
-
         public static void ExtractToDirectory(this ZipArchive archive, string destinationDirectoryName, bool overwrite)
         {
             if (!overwrite)

@@ -118,9 +118,8 @@ namespace Registrant.Pages
             {
                 try
                 {
-                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
-                    {
-                        var driver = ef.Drivers.FirstOrDefault(x => x.IdDriver == current.IdDriver);
+                    using RegistrantCoreContext ef = new RegistrantCoreContext();
+                    var driver = ef.Drivers.FirstOrDefault(x => x.IdDriver == current.IdDriver);
 
                     if (driver != null)
                     {
@@ -153,24 +152,22 @@ namespace Registrant.Pages
         }
 
 
-        /// Кнлпка удалить
+        /// Кнопка удалить
         private void btn_delete_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                using (RegistrantCoreContext ef = new RegistrantCoreContext())
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                var driver = ef.Drivers.FirstOrDefault(x => x.IdDriver == Convert.ToInt32(tb_id.Text));
+                if (driver != null)
                 {
-                    var driver = ef.Drivers.FirstOrDefault(x => x.IdDriver == Convert.ToInt32(tb_id.Text));
-                    if (driver != null)
-                    {
-                        driver.Active = "0";
-                        driver.ServiceInfo = driver.ServiceInfo + "\n" + DateTime.Now + " " + App.ActiveUser + " удалил водителя";
-                    }
-
-                    ef.SaveChanges();
-                    ContentAddEdit.Hide();
-                    btn_refresh_Click(sender, e);
+                    driver.Active = "0";
+                    driver.ServiceInfo = driver.ServiceInfo + "\n" + DateTime.Now + " " + App.ActiveUser + " удалил водителя";
                 }
+
+                ef.SaveChanges();
+                ContentAddEdit.Hide();
+                btn_refresh_Click(sender, e);
             }
             catch (Exception ex)
             {
@@ -188,12 +185,10 @@ namespace Registrant.Pages
 
             try
             {
-                using (RegistrantCoreContext ef = new RegistrantCoreContext())
-                {
-                    tb_contragent.ItemsSource = ef.Contragents.Where(x => x.Active != "0").ToList();
-                    btn_add.Visibility = Visibility.Visible;
-                    btn_delete.Visibility = Visibility.Collapsed;
-                }
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                tb_contragent.ItemsSource = ef.Contragents.Where(x => x.Active != "0").ToList();
+                btn_add.Visibility = Visibility.Visible;
+                btn_delete.Visibility = Visibility.Collapsed;
             }
             catch (Exception ex)
             {
@@ -202,7 +197,6 @@ namespace Registrant.Pages
             }
         }
 
-        /// <summary>
         /// Очистка
         void ClearTextbox()
         {
@@ -224,38 +218,36 @@ namespace Registrant.Pages
         {
             try
             {
-                using (RegistrantCoreContext ef = new RegistrantCoreContext())
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                var driver = ef.Drivers.FirstOrDefault(x => x.IdDriver == Convert.ToInt32(tb_id.Text));
+                if (driver != null)
                 {
-                    var driver = ef.Drivers.FirstOrDefault(x => x.IdDriver == Convert.ToInt32(tb_id.Text));
-                    if (driver != null)
+                    driver.Family = tb_Family.Text;
+                    driver.Name = tb_name.Text;
+                    driver.Patronymic = tb_patronomyc.Text;
+                    driver.Phone = tb_phone.Text;
+
+                    if (tb_contragent.SelectedItem != null)
                     {
-                        driver.Family = tb_Family.Text;
-                        driver.Name = tb_name.Text;
-                        driver.Patronymic = tb_patronomyc.Text;
-                        driver.Phone = tb_phone.Text;
-
-                        if (tb_contragent.SelectedItem != null)
-                        {
-                            var current = tb_contragent.SelectedItem as Contragent;
-                            driver.IdContragent = current?.IdContragent;
-                        }
-                        
-                        driver.Attorney = tb_attorney.Text;
-                        driver.Auto = tb_auto.Text;
-                        driver.AutoNumber = tb_autonum.Text;
-                        driver.Passport = tb_passport.Text;
-                        driver.Info = tb_info.Text;
-                        driver.ServiceInfo = driver.ServiceInfo + "\n" + DateTime.Now + " " + App.ActiveUser + " внес изменения";
+                        var current = tb_contragent.SelectedItem as Contragent;
+                        driver.IdContragent = current?.IdContragent;
                     }
-
-                    ef.SaveChanges();
-                    btn_close_Click(sender, e);
-                    ContentAddEdit.Hide();
-                    btn_refresh_Click(sender, e);
+                        
+                    driver.Attorney = tb_attorney.Text;
+                    driver.Auto = tb_auto.Text;
+                    driver.AutoNumber = tb_autonum.Text;
+                    driver.Passport = tb_passport.Text;
+                    driver.Info = tb_info.Text;
+                    driver.ServiceInfo = driver.ServiceInfo + "\n" + DateTime.Now + " " + App.ActiveUser + " внес изменения";
                 }
+
+                ef.SaveChanges();
+                btn_close_Click(sender, e);
+                ContentAddEdit.Hide();
+                btn_refresh_Click(sender, e);
             }
-                catch (Exception ex)
-                {
+            catch (Exception ex)
+            {
                 ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
                 ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
             }
@@ -280,12 +272,10 @@ namespace Registrant.Pages
             {
                 try
                 {
-                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
-                    {
-                        ContentInfo.ShowAsync();
-                        ContentInfoGrid.DataContext = ef.Drivers.FirstOrDefault(x => x.IdDriver == current.IdDriver);
-                        text_info_namedriver.Text = current.FIO;
-                    }
+                    using RegistrantCoreContext ef = new RegistrantCoreContext();
+                    ContentInfo.ShowAsync();
+                    ContentInfoGrid.DataContext = ef.Drivers.FirstOrDefault(x => x.IdDriver == current.IdDriver);
+                    text_info_namedriver.Text = current.FIO;
                 }
                 catch (Exception ex)
                 {
@@ -348,12 +338,10 @@ namespace Registrant.Pages
         {
             try
             {
-                using (RegistrantCoreContext ef = new RegistrantCoreContext())
-                {
-                    DateTime last30 = DateTime.Now.Date.AddDays(-30);
-                    DateTime currentMonth = DateTime.Now.Date;
-                   //var temp = ef.Shipments.Where(x => (x.IdTimeNavigation.DateTimeLeft > last30) && x.IdDriverNavigation.Active != "0" && x.IdTimeNavigation.DateTimeFactRegist.Value.Month == currentMonth.Month);
-                }
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                DateTime last30 = DateTime.Now.Date.AddDays(-30);
+                DateTime currentMonth = DateTime.Now.Date;
+                //var temp = ef.Shipments.Where(x => (x.IdTimeNavigation.DateTimeLeft > last30) && x.IdDriverNavigation.Active != "0" && x.IdTimeNavigation.DateTimeFactRegist.Value.Month == currentMonth.Month);
             }
             catch (Exception ex)
             {

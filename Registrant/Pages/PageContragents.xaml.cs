@@ -28,18 +28,23 @@ namespace Registrant.Pages
                 Thread.Sleep(Settings.App.Default.RefreshContent);
                 try
                 {
-                    using (RegistrantCoreContext ef = new RegistrantCoreContext())
-                    {
-                        var contragents = ef.Contragents.Where(x => x.Active != "0")
-                            .OrderByDescending(x => x.IdContragent);
-                        Dispatcher.Invoke(() => DataGrid_Contragents.ItemsSource = contragents);
-                        Dispatcher.Invoke(() => DataGrid_Contragents.Items.Refresh());
-                    }
+                    using RegistrantCoreContext ef = new RegistrantCoreContext();
+                    var contragents = ef.Contragents.Where(x => x.Active != "0")
+                        .OrderByDescending(x => x.IdContragent);
+                    Dispatcher.Invoke(() => DataGrid_Contragents.ItemsSource = contragents);
+                    Dispatcher.Invoke(() => DataGrid_Contragents.Items.Refresh());
                 }
                 catch (Exception ex)
                 {
-                    Dispatcher.Invoke(() => ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync());
-                    Dispatcher.Invoke(() => ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString());
+                    Dispatcher.Invoke(() =>
+                    {
+                        MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                        if (mainWindow != null)
+                        {
+                            mainWindow.ContentErrorText.ShowAsync();
+                            mainWindow.text_debuger.Text = ex.ToString();
+                        }
+                    });
                 }
             }
         }
@@ -51,18 +56,20 @@ namespace Registrant.Pages
         {
             try
             {
-                using (RegistrantCoreContext ef = new RegistrantCoreContext())
-                {
-                    var contragents = ef.Contragents
-                        .Where(x => x.Active != "0")
-                        .OrderByDescending(x => x.IdContragent);
-                    DataGrid_Contragents.ItemsSource = contragents;
-                }
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                var contragents = ef.Contragents
+                    .Where(x => x.Active != "0")
+                    .OrderByDescending(x => x.IdContragent);
+                DataGrid_Contragents.ItemsSource = contragents;
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
         }
 
@@ -88,11 +95,10 @@ namespace Registrant.Pages
 
             if (current != null)
             {
-                try
-                text_editnamecontragent.Text = $"Редактирование элемента {current.Name}";
+                try 
                 {
-                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
-                    {
+                    text_editnamecontragent.Text = $"Редактирование элемента {current.Name}";
+                    using RegistrantCoreContext ef = new RegistrantCoreContext();
                     var contragent = ef.Contragents.FirstOrDefault(x => x.IdContragent == current.IdContragent);
                     if (contragent != null)
                     {
@@ -100,12 +106,15 @@ namespace Registrant.Pages
                         tb_edit_name.Text = contragent.Name.ToString();
                     }
                     ContentEdit.ShowAsync();
-                    }
                 }
                 catch (Exception ex)
                 {
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                    MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                    if (mainWindow != null)
+                    {
+                        mainWindow.ContentErrorText.ShowAsync();
+                        mainWindow.text_debuger.Text = ex.ToString();
+                    }
                 }
             }
         }
@@ -118,23 +127,24 @@ namespace Registrant.Pages
 
             try
             {
-                using (RegistrantCoreContext ef = new RegistrantCoreContext())
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                var contragent = ef.Contragents.FirstOrDefault(x => x.IdContragent == current.IdContragent);
+                if (contragent != null)
                 {
-                    var contragent = ef.Contragents.FirstOrDefault(x => x.IdContragent == current.IdContragent);
-                    if (contragent != null)
-                    {
-                        contragent.Active = "0";
-                        contragent.ServiceInfo = $"{contragent.ServiceInfo}\n{DateTime.Now} {App.ActiveUser} изменил удалил";
-                    }
-                    ef.SaveChanges();
-                    btn_refresh_Click(sender, e);
-
+                    contragent.Active = "0";
+                    contragent.ServiceInfo = $"{contragent.ServiceInfo}\n{DateTime.Now} {App.ActiveUser} изменил удалил";
                 }
+                ef.SaveChanges();
+                btn_refresh_Click(sender, e);
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
         }
 
@@ -143,19 +153,21 @@ namespace Registrant.Pages
         {
             try
             {
-                using (RegistrantCoreContext ef = new RegistrantCoreContext())
-                {
-                    var contragents = ef.Contragents
-                        .Where(x => x.Active != "0")
-                        .OrderByDescending(x => x.IdContragent);
-                    DataGrid_Contragents.ItemsSource = null;
-                    DataGrid_Contragents.ItemsSource = contragents;
-                }
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                var contragents = ef.Contragents
+                    .Where(x => x.Active != "0")
+                    .OrderByDescending(x => x.IdContragent);
+                DataGrid_Contragents.ItemsSource = null;
+                DataGrid_Contragents.ItemsSource = contragents;
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
         }
 
@@ -175,24 +187,26 @@ namespace Registrant.Pages
         {
             try
             {
-                using (RegistrantCoreContext ef = new RegistrantCoreContext())
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                Contragent contragent = new Contragent
                 {
-                    Contragent contragent = new Contragent
-                    {
-                        Name = tb_namecontragent.Text,
-                        ServiceInfo = $"{DateTime.Now} {App.ActiveUser} добавил контрагента",
-                        Active = "1"
-                    };
-                    ef.Add(contragent);
-                    ef.SaveChanges();
-                    btn_refresh_Click(sender, e);
-                    ContentAdd.Hide();
-                }
+                    Name = tb_namecontragent.Text,
+                    ServiceInfo = $"{DateTime.Now} {App.ActiveUser} добавил контрагента",
+                    Active = "1"
+                };
+                ef.Add(contragent);
+                ef.SaveChanges();
+                btn_refresh_Click(sender, e);
+                ContentAdd.Hide();
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
         }
 
@@ -215,24 +229,26 @@ namespace Registrant.Pages
         {
             try
             {
-                using (RegistrantCoreContext ef = new RegistrantCoreContext())
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                var contragent = ef.Contragents.FirstOrDefault(x => x.IdContragent == Convert.ToInt32(tb_idcontragent.Text));
+                if (contragent != null)
                 {
-                    var contragent = ef.Contragents.FirstOrDefault(x => x.IdContragent == Convert.ToInt32(tb_idcontragent.Text));
-                    if (contragent != null)
-                    {
-                        contragent.Name = tb_edit_name.Text;
-                        contragent.ServiceInfo =
-                            $"{contragent.ServiceInfo}\n {DateTime.Now} {App.ActiveUser} изменил название контрагента";
-                    }
-                    ef.SaveChanges();
-                    btn_refresh_Click(sender, e);
-                    ContentEdit.Hide();
+                    contragent.Name = tb_edit_name.Text;
+                    contragent.ServiceInfo =
+                        $"{contragent.ServiceInfo}\n {DateTime.Now} {App.ActiveUser} изменил название контрагента";
                 }
+                ef.SaveChanges();
+                btn_refresh_Click(sender, e);
+                ContentEdit.Hide();
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
         }
 
@@ -261,10 +277,9 @@ namespace Registrant.Pages
 
             if (current != null)
             {
-
                 try
-                using (RegistrantCoreContext ef = new RegistrantCoreContext())
                 {
+                    using RegistrantCoreContext ef = new RegistrantCoreContext();
                     var contragent = ef.Contragents.FirstOrDefault(x => x.IdContragent == current.IdContragent);
                     if (contragent != null)
                     {
@@ -274,8 +289,12 @@ namespace Registrant.Pages
                 }
                 catch (Exception ex)
                 {
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                    MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                    if (mainWindow != null)
+                    {
+                        mainWindow.ContentErrorText.ShowAsync();
+                        mainWindow.text_debuger.Text = ex.ToString();
+                    }
                 }
             }
         }
