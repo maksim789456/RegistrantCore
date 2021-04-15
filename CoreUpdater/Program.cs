@@ -19,33 +19,33 @@ namespace CoreUpdater
             Console.WriteLine("╩╚═└─┘└─┘┴┴└─└─┘ ┴ ┴ ┴┘└┘ ┴ ╚═╝└─┘┴└─└─┘");
             Console.WriteLine("");
             Console.WriteLine("============================================");
-            Console.WriteLine("{0} > Registrant Core Updater", DateTime.Now);
-            Console.WriteLine("{0} > v.0.1 by Alexey Kulagin (TheCrazyWolf)", DateTime.Now);
-            Console.WriteLine("{0} > Инициализирован старт обновления", DateTime.Now);
+            Logger.LogWithTime("Registrant Core Updater");
+            Logger.LogWithTime("v.0.1 by Alexey Kulagin (TheCrazyWolf)");
+            Logger.LogWithTime("Инициализирован старт обновления");
             Console.WriteLine("");
             Console.WriteLine("");
             CheckVersion();
             DownloadPackage();
             Unpack();
             CleanUP();
-            Console.WriteLine("{0} > Обновление завершено", DateTime.Now);
+            Logger.LogWithTime("Обновление завершено");
             Process.Start("Registrant.exe");
             Console.ReadKey();
         }
 
         public static void CheckVersion()
         {
-            Console.WriteLine("{0} > Получение списка актуальных версии", DateTime.Now);
+            Logger.LogWithTime("Получение списка актуальных версии");
             try
             {
                 WebClient web = new WebClient();
                 ActualVer = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualVer.txt");
-                Console.WriteLine("{0} > Последняя версия: {1}", DateTime.Now, ActualVer);
+                Logger.LogWithTime($"Последняя версия: {ActualVer}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("{0} > ОШИБКА ОБНОВЛЕНИЯ", DateTime.Now);
-                Console.WriteLine("{0} > Не удалось получить список актуальных версии программного обеспечения.", DateTime.Now);
+                Logger.LogWithTime("ОШИБКА ОБНОВЛЕНИЯ");
+                Logger.LogWithTime("Не удалось получить список актуальных версии программного обеспечения.");
                 Console.ReadKey();
                 Console.ReadKey();
             }
@@ -53,31 +53,31 @@ namespace CoreUpdater
 
         public static void DownloadPackage()
         {
-            Console.WriteLine("{0} > Загрузка выбранной версии {1}", DateTime.Now, ActualVer);
+            Logger.LogWithTime($"Загрузка выбранной версии {ActualVer}");
             try
             {
                 string url = "https://github.com/TheCrazyWolf/RegistrantCore/releases/download/" + ActualVer + "/package.zip";
                 
-                Console.WriteLine("{0} > Загрузка началась ({1})", DateTime.Now, url);
+                Logger.LogWithTime($"Загрузка началась ({url})");
                 WebClient web = new WebClient();
                 web.DownloadFile(@url, @"package.zip");
 
                 string package = @"package.zip";
                 if (File.Exists(package))
                 {
-                    Console.WriteLine("{0} > Пакет загружен", DateTime.Now, url);
+                    Logger.LogWithTime("Пакет загружен");
                 }
                 else
                 {
-                    Console.WriteLine("{0} > Что то пошло не так", DateTime.Now, url);
+                    Logger.LogWithTime("Что то пошло не так");
                     Console.ReadKey();
                 }
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine("{0} > ОШИБКА ОБНОВЛЕНИЯ", DateTime.Now);
-                Console.WriteLine("{0} > Не удалось получить список актуальных версии программного обеспечения.", DateTime.Now);
+                Logger.LogWithTime("ОШИБКА ОБНОВЛЕНИЯ");
+                Logger.LogWithTime("Не удалось получить список актуальных версии программного обеспечения.");
                 Console.ReadKey();
                 Console.ReadKey();
             }
@@ -86,19 +86,19 @@ namespace CoreUpdater
         public static void Unpack()
         {
             Console.WriteLine("");
-            Console.WriteLine("{0} > ВНИМАНИЕ!", DateTime.Now);
-            Console.WriteLine("{0} > Требуется подключение к интернету, во время обновления не пытайтесь", DateTime.Now);
-            Console.WriteLine("{0} > закрыть это окно, это может привести к сбою обновления и может откразится на", DateTime.Now);
-            Console.WriteLine("{0} > работе программы", DateTime.Now);
+            Logger.LogWithTime("ВНИМАНИЕ!");
+            Logger.LogWithTime("Требуется подключение к интернету, во время обновления не пытайтесь");
+            Logger.LogWithTime("закрыть это окно, это может привести к сбою обновления и может откразится на");
+            Logger.LogWithTime("работе программы");
             Console.WriteLine("");
-            Console.WriteLine("{0} > Убедитесь, что RegistrantCore сейчас закрыт", DateTime.Now);
-            Console.WriteLine("{0} > Ожидание", DateTime.Now);
+            Logger.LogWithTime("Убедитесь, что RegistrantCore сейчас закрыт");
+            Logger.LogWithTime("Ожидание");
             Thread.Sleep(3000);
             try
             {
-                Console.WriteLine("{0} > Распаковка пакета и применение обновления", DateTime.Now);
+                Logger.LogWithTime("Распаковка пакета и применение обновления");
                 ZipArchiveExtensions.ExtractToDirectory(ZipFile.OpenRead("./package.zip"), "./", true);
-                Console.WriteLine("{0} > Развертывание завершено", DateTime.Now);
+                Logger.LogWithTime("Развертывание завершено");
             }
             catch (Exception ex)
             {
@@ -109,9 +109,9 @@ namespace CoreUpdater
 
         public static void CleanUP()
         {
-            Console.WriteLine("{0} > Очистка кеша", DateTime.Now);
+            Logger.LogWithTime("Очистка кеша");
             //File.Delete(@"package.zip");
-            Console.WriteLine("{0} > Очистка завершена", DateTime.Now);
+            Logger.LogWithTime("Очистка завершена");
         }
     }
     public static class ZipArchiveExtensions
