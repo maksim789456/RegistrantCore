@@ -54,16 +54,8 @@ namespace Registrant.Forms
         /// Подгрузка водителей
         void LoadDriversBox()
         {
-            try
-            {
-                using RegistrantCoreContext ef = new RegistrantCoreContext();
-                Controllers.DriversController driver = new Controllers.DriversController();
-                cb_drivers.ItemsSource = driver.GetDriversСurrent();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);;
-            }
+            Controllers.DriversController driver = new Controllers.DriversController();
+            cb_drivers.ItemsSource = driver.GetDriversCurrent();
         }
 
         /// Редактирование отгрузок
@@ -109,7 +101,7 @@ namespace Registrant.Forms
 
                 if (shipment != null)
                 {
-                    cb_drivers.ItemsSource = driver.GetDriversСurrent(shipment.IdDriver ?? -1);
+                    cb_drivers.ItemsSource = driver.GetDriversCurrent(shipment.IdDriver ?? -1);
                     cb_drivers.SelectedItem = driver.Driver.FirstOrDefault(x => x.IdDriver == shipment.IdDriver);
 
                     //Запрет на редактирование если началась загрузка
@@ -170,7 +162,7 @@ namespace Registrant.Forms
                     {
                         if (cb_drivers.SelectedItem != null)
                         {
-                            var current = cb_drivers.SelectedItem as DB.Driver;
+                            var current = cb_drivers.SelectedItem as Driver;
                             shipment.IdDriver = current?.IdDriver;
                         }
 

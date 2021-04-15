@@ -99,8 +99,12 @@ namespace Registrant.Pages
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
         }
 
@@ -145,8 +149,12 @@ namespace Registrant.Pages
                 }
                 catch (Exception ex)
                 {
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                    MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                    if (mainWindow != null)
+                    {
+                        mainWindow.ContentErrorText.ShowAsync();
+                        mainWindow.text_debuger.Text = ex.ToString();
+                    }
                 }
             }
         }
@@ -171,8 +179,12 @@ namespace Registrant.Pages
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
         }
 
@@ -192,8 +204,12 @@ namespace Registrant.Pages
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
         }
 
@@ -248,8 +264,12 @@ namespace Registrant.Pages
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
         }
 
@@ -275,12 +295,16 @@ namespace Registrant.Pages
                     using RegistrantCoreContext ef = new RegistrantCoreContext();
                     ContentInfo.ShowAsync();
                     ContentInfoGrid.DataContext = ef.Drivers.FirstOrDefault(x => x.IdDriver == current.IdDriver);
-                    text_info_namedriver.Text = current.FIO;
+                    text_info_namedriver.Text = current.Fio;
                 }
                 catch (Exception ex)
                 {
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                    MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                    if (mainWindow != null)
+                    {
+                        mainWindow.ContentErrorText.ShowAsync();
+                        mainWindow.text_debuger.Text = ex.ToString();
+                    }
                 }
 
             }
@@ -300,8 +324,8 @@ namespace Registrant.Pages
 
                     var temp = controller.GetDriversAll();
 
-                    var data = temp.Where(t => t.FIO.ToUpper().StartsWith(tb_search.Text.ToUpper())).ToList();
-                    var sDOP = temp.Where(t => t.FIO.ToUpper().Contains(tb_search.Text.ToUpper())).ToList();
+                    var data = temp.Where(t => t.Fio.ToUpper().StartsWith(tb_search.Text.ToUpper())).ToList();
+                    var sDOP = temp.Where(t => t.Fio.ToUpper().Contains(tb_search.Text.ToUpper())).ToList();
                     data.AddRange(sDOP);
                     var noDupes = data.Distinct().ToList();
                     DataGrid_Drivers.ItemsSource = noDupes;
@@ -318,8 +342,12 @@ namespace Registrant.Pages
                 }
                 catch (Exception ex)
                 {
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                    MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                    if (mainWindow != null)
+                    {
+                        mainWindow.ContentErrorText.ShowAsync();
+                        mainWindow.text_debuger.Text = ex.ToString();
+                    }
                 }
             }
         }
@@ -345,8 +373,12 @@ namespace Registrant.Pages
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
         }
     }

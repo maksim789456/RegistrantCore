@@ -4,7 +4,7 @@ namespace Registrant.Models
 {
     public class PrintShipments : DB.Shipment
     {
-        public string FIOTelephone { get; set; }
+        public string FioTelephone { get; set; }
         public DateTime DatePlan { get; set; }
 
         public string Contragent { get; set; }
@@ -33,7 +33,7 @@ namespace Registrant.Models
         {
             IdShipment = shipment.IdShipment;
             if (shipment.IdDriverNavigation != null)
-                FIOTelephone = $"{shipment.IdDriverNavigation.Family} {shipment.IdDriverNavigation.Name} {shipment.IdDriverNavigation.Patronymic} {shipment.IdDriverNavigation.Phone}";
+                FioTelephone = $"{shipment.IdDriverNavigation.Family} {shipment.IdDriverNavigation.Name} {shipment.IdDriverNavigation.Patronymic} {shipment.IdDriverNavigation.Phone}";
 
             if (shipment.IdTimeNavigation.DateTimePlanRegist.HasValue)
                 DatePlan = shipment.IdTimeNavigation.DateTimePlanRegist.Value;

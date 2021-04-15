@@ -123,8 +123,8 @@ namespace Registrant.Pages
                     DataGrid_Shipments.ItemsSource = null;
 
                     var temp = controller.GetShipmentsAll();
-                    var data = temp.Where(t => t.FIO.ToUpper().StartsWith(tb_search.Text.ToUpper())).ToList();
-                    var sDOP = temp.Where(t => t.FIO.ToUpper().Contains(tb_search.Text.ToUpper())).ToList();
+                    var data = temp.Where(t => t.Fio.ToUpper().StartsWith(tb_search.Text.ToUpper())).ToList();
+                    var sDOP = temp.Where(t => t.Fio.ToUpper().Contains(tb_search.Text.ToUpper())).ToList();
                     data.AddRange(sDOP);
                     var noDupes = data.Distinct().ToList();
                     DataGrid_Shipments.ItemsSource = noDupes;
@@ -162,7 +162,7 @@ namespace Registrant.Pages
 
             if (current != null)
             {
-                MessageBoxResult? result = ModernWpf.MessageBox.Show("Сменить статус водителя " + current.FIO + " на Загрузка начата?", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                MessageBoxResult? result = ModernWpf.MessageBox.Show("Сменить статус водителя " + current.Fio + " на Загрузка начата?", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                 {
 
@@ -194,7 +194,7 @@ namespace Registrant.Pages
             if (current != null)
             {
                 MessageBoxResult? result = ModernWpf.MessageBox.Show(
-                    "Сменить статус водителя " + current.FIO + " на Загрузка окончена?", "Внимание",
+                    "Сменить статус водителя " + current.Fio + " на Загрузка окончена?", "Внимание",
                     MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                 {

@@ -4,20 +4,11 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
-using System.Drawing.Printing;
 using System.IO;
-using System.Linq;
-using System.Reflection.Metadata;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Registrant.Forms
 {
@@ -67,7 +58,7 @@ namespace Registrant.Forms
                 ApplicationCommands.Copy.Execute(null, grid_shipments);
                 String result = (string)Clipboard.GetData(DataFormats.Text);
                 grid_shipments.UnselectAllCells();
-                System.IO.StreamWriter file = new System.IO.StreamWriter(filename, false, Encoding.Unicode);
+                StreamWriter file = new StreamWriter(filename, false, Encoding.Unicode);
                 file.WriteLine(result.Replace(",", " "));
                 file.Close();
             }
@@ -79,8 +70,8 @@ namespace Registrant.Forms
             var json = JsonConvert.SerializeObject(item);
             DataTable dt = JsonConvert.DeserializeObject<DataTable>(json);
 
-            iTextSharp.text.Document document = new iTextSharp.text.Document();
-            PdfWriter.GetInstance(document, new FileStream(@"C:\Users\Алексей\Desktop\TestWpf-master\tt.pdf", FileMode.Create));
+            Document document = new Document();
+            PdfWriter.GetInstance(document, new FileStream(Environment.CurrentDirectory + @"\print.pdf", FileMode.Create));
             document.Open();
 
             Font font5 = FontFactory.GetFont(FontFactory.HELVETICA, 10);

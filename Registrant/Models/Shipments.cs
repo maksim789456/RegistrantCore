@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Windows;
 
 namespace Registrant.Models
 {
     public class Shipments : DB.Shipment
     {
         //Водитель
-        public string FIO { get; set; }
+        public string Fio { get; set; }
         public string Family { get; set; }
         public string Name { get; set; }
         public string Patronymic { get; set; }
@@ -20,8 +21,8 @@ namespace Registrant.Models
 
         public string TextStatus { get; set; }
 
-        public string btn_load { get; set; }
-        public string btn_endload { get; set; }
+        public Visibility LoadButtonVisibility { get; set; }
+        public Visibility EndLoadButtonVisibility { get; set; }
 
         public Shipments(DB.Shipment shipment)
         {
@@ -43,7 +44,7 @@ namespace Registrant.Models
             Family = shipment.IdDriverNavigation?.Family;
             Name = shipment.IdDriverNavigation?.Name;
             Patronymic = shipment.IdDriverNavigation?.Patronymic;
-            FIO = $"{Family} {Name} {Patronymic}";
+            Fio = $"{Family} {Name} {Patronymic}";
             Phone = shipment.IdDriverNavigation?.Phone;
 
             if (shipment.IdTimeNavigation.DateTimePlanRegist.HasValue)
@@ -83,13 +84,13 @@ namespace Registrant.Models
                 TextStatus = $"Покинул склад ({DateTimeLeft})";
                 if (App.LevelAccess == "admin" || App.LevelAccess == "warehouse")
                 {
-                    btn_endload = "Collapsed";
-                    btn_load = "Collapsed";
+                    EndLoadButtonVisibility = Visibility.Collapsed;
+                    LoadButtonVisibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    btn_endload = "Collapsed";
-                    btn_load = "Collapsed";
+                    EndLoadButtonVisibility = Visibility.Collapsed;
+                    LoadButtonVisibility = Visibility.Collapsed;
                 }
             }
             else if (shipment.IdTimeNavigation?.DateTimeLeft == null && shipment.IdTimeNavigation?.DateTimeEndLoad != null)
@@ -97,13 +98,13 @@ namespace Registrant.Models
                 TextStatus = $"Отгрузка завершена ({DateTimeEndLoad})";
                 if (App.LevelAccess == "admin" || App.LevelAccess == "warehouse")
                 {
-                    btn_endload = "Collapsed";
-                    btn_load = "Collapsed";
+                    EndLoadButtonVisibility = Visibility.Collapsed;
+                    LoadButtonVisibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    btn_endload = "Collapsed";
-                    btn_load = "Collapsed";
+                    EndLoadButtonVisibility = Visibility.Collapsed;
+                    LoadButtonVisibility = Visibility.Collapsed;
                 }
             }
             else if (shipment.IdTimeNavigation?.DateTimeEndLoad == null && shipment.IdTimeNavigation?.DateTimeLoad != null)
@@ -111,13 +112,13 @@ namespace Registrant.Models
                 TextStatus = $"Отгрузка ({DateTimeLoad})";
                 if (App.LevelAccess == "admin" || App.LevelAccess == "warehouse")
                 {
-                    btn_endload = "Visible";
-                    btn_load = "Collapsed";
+                    EndLoadButtonVisibility = Visibility.Visible;
+                    LoadButtonVisibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    btn_endload = "Collapsed";
-                    btn_load = "Collapsed";
+                    EndLoadButtonVisibility = Visibility.Collapsed;
+                    LoadButtonVisibility = Visibility.Collapsed;
                 }
             }
             else if (shipment.IdTimeNavigation?.DateTimeLoad == null && shipment.IdTimeNavigation?.DateTimeArrive != null)
@@ -125,13 +126,13 @@ namespace Registrant.Models
                 TextStatus = $"На территории склада ({DateTimeArrive})";
                 if (App.LevelAccess == "admin" || App.LevelAccess == "warehouse")
                 {
-                    btn_endload = "Collapsed";
-                    btn_load = "Visible";
+                    EndLoadButtonVisibility = Visibility.Collapsed;
+                    LoadButtonVisibility = Visibility.Visible;
                 }
                 else
                 {
-                    btn_endload = "Collapsed";
-                    btn_load = "Collapsed";
+                    EndLoadButtonVisibility = Visibility.Collapsed;
+                    LoadButtonVisibility = Visibility.Collapsed;
                 }
             }
             else if (shipment.IdTimeNavigation?.DateTimeArrive == null && shipment.IdTimeNavigation?.DateTimeFactRegist != null)
@@ -139,27 +140,27 @@ namespace Registrant.Models
                 TextStatus = $"Зарегистрирован ({DateTimeFactRegist})";
                 if (App.LevelAccess == "admin" || App.LevelAccess == "warehouse")
                 {
-                    btn_endload = "Collapsed";
-                    btn_load = "Collapsed";
+                    EndLoadButtonVisibility = Visibility.Collapsed;
+                    LoadButtonVisibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    btn_endload = "Collapsed";
-                    btn_load = "Collapsed";
+                    EndLoadButtonVisibility = Visibility.Collapsed;
+                    LoadButtonVisibility = Visibility.Collapsed;
                 }
 
             }
             else if (shipment.IdTimeNavigation?.DateTimeFactRegist == null && shipment.IdTimeNavigation?.DateTimePlanRegist != null)
             {
                 TextStatus = "";
-                btn_endload = "Collapsed";
-                btn_load = "Collapsed";
+                EndLoadButtonVisibility = Visibility.Collapsed;
+                LoadButtonVisibility = Visibility.Collapsed;
             }
             else if (shipment.IdTimeNavigation?.DateTimePlanRegist == null && shipment.IdTimeNavigation?.DateTimeFactRegist != null)
             {
                 TextStatus = $"Зарегистрирован ({DateTimeFactRegist})";
-                btn_endload = "Collapsed";
-                btn_load = "Collapsed";
+                EndLoadButtonVisibility = Visibility.Collapsed;
+                LoadButtonVisibility = Visibility.Collapsed;
             }
 
         }
