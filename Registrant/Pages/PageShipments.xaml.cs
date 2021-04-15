@@ -4,6 +4,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using Registrant.DB;
+using Registrant.Models;
 
 namespace Registrant.Pages
 {
@@ -48,12 +49,12 @@ namespace Registrant.Pages
                             Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = controller.GetShipmentsFactReg(DatePicker.SelectedDate ?? default));
                             Dispatcher.Invoke(() => DataGrid_Shipments.Items.Refresh());
                         }
-                        else if(Dispatcher.Invoke(() => cb_sort.SelectedIndex == 2))
+                        else if (Dispatcher.Invoke(() => cb_sort.SelectedIndex == 2))
                         {
                             Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = controller.GetShipmentsArrive(DatePicker.SelectedDate ?? default));
                             Dispatcher.Invoke(() => DataGrid_Shipments.Items.Refresh());
                         }
-                        else if(Dispatcher.Invoke(() => cb_sort.SelectedIndex == 3))
+                        else if (Dispatcher.Invoke(() => cb_sort.SelectedIndex == 3))
                         {
                             Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = controller.GetShipmentsLeft(DatePicker.SelectedDate ?? default));
                             Dispatcher.Invoke(() => DataGrid_Shipments.Items.Refresh());
@@ -81,26 +82,14 @@ namespace Registrant.Pages
                 if (DatePicker.SelectedDate != null)
                 {
                     DataGrid_Shipments.ItemsSource = null;
-                    if (cb_sort.SelectedIndex == 0)
+                    DataGrid_Shipments.ItemsSource = cb_sort.SelectedIndex switch
                     {
-                        DataGrid_Shipments.ItemsSource = controller.GetShipments(DatePicker.SelectedDate.Value);
-                    }
-                    else if (cb_sort.SelectedIndex == 1)
-                    {
-                        DataGrid_Shipments.ItemsSource = controller.GetShipmentsFactReg(DatePicker.SelectedDate.Value);
-                    }
-                    else if (cb_sort.SelectedIndex == 2)
-                    {
-                        DataGrid_Shipments.ItemsSource = controller.GetShipmentsArrive(DatePicker.SelectedDate.Value);
-                    }
-                    else if (cb_sort.SelectedIndex == 3)
-                    {
-                        DataGrid_Shipments.ItemsSource = controller.GetShipmentsLeft(DatePicker.SelectedDate.Value);
-                    }
-                    else
-                    {
-                        DataGrid_Shipments.ItemsSource = controller.GetShipments(DatePicker.SelectedDate.Value);
-                    }
+                        0 => controller.GetShipments(DatePicker.SelectedDate.Value),
+                        1 => controller.GetShipmentsFactReg(DatePicker.SelectedDate.Value),
+                        2 => controller.GetShipmentsArrive(DatePicker.SelectedDate.Value),
+                        3 => controller.GetShipmentsLeft(DatePicker.SelectedDate.Value),
+                        _ => controller.GetShipments(DatePicker.SelectedDate.Value)
+                    };
                 }
             }
         }
@@ -124,8 +113,8 @@ namespace Registrant.Pages
 
                     var temp = controller.GetShipmentsAll();
                     var data = temp.Where(t => t.Fio.ToUpper().StartsWith(tb_search.Text.ToUpper())).ToList();
-                    var sDOP = temp.Where(t => t.Fio.ToUpper().Contains(tb_search.Text.ToUpper())).ToList();
-                    data.AddRange(sDOP);
+                    var sDop = temp.Where(t => t.Fio.ToUpper().Contains(tb_search.Text.ToUpper())).ToList();
+                    data.AddRange(sDop);
                     var noDupes = data.Distinct().ToList();
                     DataGrid_Shipments.ItemsSource = noDupes;
 
@@ -140,8 +129,8 @@ namespace Registrant.Pages
                 }
                 catch (Exception ex)
                 {
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                    ((MainWindow)Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                    ((MainWindow)Application.Current.MainWindow).text_debuger.Text = ex.ToString();
                 }
             }
         }
@@ -158,7 +147,7 @@ namespace Registrant.Pages
         private void btn_load_Click(object sender, RoutedEventArgs e)
         {
             var bt = e.OriginalSource as Button;
-            var current = bt?.DataContext as Models.Shipments;
+            var current = bt?.DataContext as Shipments;
 
             if (current != null)
             {
@@ -176,10 +165,9 @@ namespace Registrant.Pages
                     }
                     catch (Exception ex)
                     {
-                        ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                        ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                        ((MainWindow)Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                        ((MainWindow)Application.Current.MainWindow).text_debuger.Text = ex.ToString();
                     }
-                    
                 }
             }
 
@@ -189,7 +177,7 @@ namespace Registrant.Pages
         private void btn_endload_Click(object sender, RoutedEventArgs e)
         {
             var bt = e.OriginalSource as Button;
-            var current = bt?.DataContext as Models.Shipments;
+            var current = bt?.DataContext as Shipments;
 
             if (current != null)
             {
@@ -208,8 +196,8 @@ namespace Registrant.Pages
                     }
                     catch (Exception ex)
                     {
-                        ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                        ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                        ((MainWindow)Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                        ((MainWindow)Application.Current.MainWindow).text_debuger.Text = ex.ToString();
                     }
                 }
             }
@@ -220,7 +208,7 @@ namespace Registrant.Pages
         private void btn_edit_Click(object sender, RoutedEventArgs e)
         {
             var bt = e.OriginalSource as Button;
-            var current = bt?.DataContext as Models.Shipments;
+            var current = bt?.DataContext as Shipments;
             if (current !=null)
             {
                 Forms.AddOrEditShipment addOr = new Forms.AddOrEditShipment(current.IdShipment);

@@ -30,8 +30,12 @@ namespace Registrant.Pages
             while (true)
             {
                 Thread.Sleep(Settings.App.Default.RefreshContent);
-                Dispatcher.Invoke(() => DataGrid_Plan.ItemsSource = plan.GetPlanShipments(Dispatcher.Invoke(() => DatePicker.SelectedDate ?? default)));
-                Dispatcher.Invoke(() => DataGrid_Drivers.ItemsSource = kPP.GetShipments(Dispatcher.Invoke(() => DatePicker.SelectedDate ?? default)));
+                Dispatcher.Invoke(() =>
+                    DataGrid_Plan.ItemsSource =
+                        plan.GetPlanShipments(Dispatcher.Invoke(() => DatePicker.SelectedDate ?? default)));
+                Dispatcher.Invoke(() =>
+                    DataGrid_Drivers.ItemsSource =
+                        kPP.GetShipments(Dispatcher.Invoke(() => DatePicker.SelectedDate ?? default)));
                 Dispatcher.Invoke(() => DataGrid_Plan.Items.Refresh());
                 Dispatcher.Invoke(() => DataGrid_Drivers.Items.Refresh());
             }
@@ -47,8 +51,12 @@ namespace Registrant.Pages
             Dispatcher.Invoke(() => DataGrid_Plan.ItemsSource = null);
             Dispatcher.Invoke(() => DataGrid_Drivers.ItemsSource = null);
 
-            Dispatcher.Invoke(() => DataGrid_Plan.ItemsSource = plan.GetPlanShipments(Dispatcher.Invoke(() => DatePicker.SelectedDate ?? default)));
-            Dispatcher.Invoke(() => DataGrid_Drivers.ItemsSource = kPP.GetShipments(Dispatcher.Invoke(() => DatePicker.SelectedDate ?? default)));
+            Dispatcher.Invoke(() =>
+                DataGrid_Plan.ItemsSource =
+                    plan.GetPlanShipments(Dispatcher.Invoke(() => DatePicker.SelectedDate ?? default)));
+            Dispatcher.Invoke(() =>
+                DataGrid_Drivers.ItemsSource =
+                    kPP.GetShipments(Dispatcher.Invoke(() => DatePicker.SelectedDate ?? default)));
         }
 
         private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -63,26 +71,24 @@ namespace Registrant.Pages
 
             if (current != null)
             {
-                MessageBoxResult? result = ModernWpf.MessageBox.Show(
+                MessageBoxResult? result = MessageBox.Show(
                     "Сменить статус водителя " + current.Fio + " на Прибыл?", "Внимание", MessageBoxButton.YesNo,
                     MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                 {
                     try
                     {
-                        using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
-                        {
-                            var temp = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
-                            if (temp != null) 
-                                temp.IdTimeNavigation.DateTimeArrive = DateTime.Now;
-                            ef.SaveChanges();
-                            btn_refresh_Click(sender, e);
-                        }
+                        using DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext();
+                        var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
+                        if (shipment != null)
+                            shipment.IdTimeNavigation.DateTimeArrive = DateTime.Now;
+                        ef.SaveChanges();
+                        btn_refresh_Click(sender, e);
                     }
                     catch (Exception ex)
                     {
-                        ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                        ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                        ((MainWindow) Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                        ((MainWindow) Application.Current.MainWindow).text_debuger.Text = ex.ToString();
                     }
                 }
             }
@@ -101,19 +107,17 @@ namespace Registrant.Pages
                 {
                     try
                     {
-                        using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
-                        {
-                            var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
-                            if (shipment != null) 
-                                shipment.IdTimeNavigation.DateTimeLeft = DateTime.Now;
-                            ef.SaveChanges();
-                            btn_refresh_Click(sender, e);
-                        }
+                        using DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext();
+                        var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
+                        if (shipment != null)
+                            shipment.IdTimeNavigation.DateTimeLeft = DateTime.Now;
+                        ef.SaveChanges();
+                        btn_refresh_Click(sender, e);
                     }
                     catch (Exception ex)
                     {
-                        ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                        ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                        ((MainWindow) Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                        ((MainWindow) Application.Current.MainWindow).text_debuger.Text = ex.ToString();
                     }
                 }
             }
@@ -140,7 +144,7 @@ namespace Registrant.Pages
         {
             var bt = e.OriginalSource as Button;
             var current = bt?.DataContext as PlanShipment;
-            if (current !=null)
+            if (current != null)
             {
                 MessageBoxResult? result =
                     MessageBox.Show("Сменить статус водителя " + current.Fio + " на Зарегистрирован?", "Внимание",
@@ -149,23 +153,20 @@ namespace Registrant.Pages
                 {
                     try
                     {
-                        using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
-                        {
-                            var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
-                            if (shipment != null) 
-                                shipment.IdTimeNavigation.DateTimeFactRegist = DateTime.Now;
-                            ef.SaveChanges();
-                            btn_refresh_Click(sender, e);
-                        }
+                        using DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext();
+                        var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == current.IdShipment);
+                        if (shipment != null)
+                            shipment.IdTimeNavigation.DateTimeFactRegist = DateTime.Now;
+                        ef.SaveChanges();
+                        btn_refresh_Click(sender, e);
                     }
                     catch (Exception ex)
                     {
-                        ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                        ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                        ((MainWindow) Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                        ((MainWindow) Application.Current.MainWindow).text_debuger.Text = ex.ToString();
                     }
                 }
             }
-
         }
 
         private void btn_add_close_Click(object sender, RoutedEventArgs e)
@@ -192,7 +193,7 @@ namespace Registrant.Pages
                             Passport = tb_passport.Text,
                             Info = tb_info.Text,
                             ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил карточку водителя"
-                        }, 
+                        },
                         IdTimeNavigation = new DB.Time
                         {
                             DateTimeFactRegist = DateTime.Now
@@ -208,8 +209,8 @@ namespace Registrant.Pages
             }
             catch (Exception ex)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                ((MainWindow) Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                ((MainWindow) Application.Current.MainWindow).text_debuger.Text = ex.ToString();
             }
         }
     }

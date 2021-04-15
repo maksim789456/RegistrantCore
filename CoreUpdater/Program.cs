@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Net;
 using System.Threading;
 
@@ -10,7 +9,7 @@ namespace CoreUpdater
 {
     class Program
     {
-        private static string _actualVer { get; set; }
+        private static string ActualVer { get; set; }
         static void Main(string[] args)
         {
             Console.WriteLine("============================================");
@@ -40,8 +39,8 @@ namespace CoreUpdater
             try
             {
                 WebClient web = new WebClient();
-                _actualVer = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualVer.txt");
-                Console.WriteLine("{0} > Последняя версия: {1}", DateTime.Now, _actualVer);
+                ActualVer = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualVer.txt");
+                Console.WriteLine("{0} > Последняя версия: {1}", DateTime.Now, ActualVer);
             }
             catch (Exception ex)
             {
@@ -54,12 +53,12 @@ namespace CoreUpdater
 
         public static void DownloadPackage()
         {
-            Console.WriteLine("{0} > Загрузка выбранной версии {1}", DateTime.Now, _actualVer);
+            Console.WriteLine("{0} > Загрузка выбранной версии {1}", DateTime.Now, ActualVer);
             try
             {
-                string url = "https://github.com/TheCrazyWolf/RegistrantCore/releases/download/" + _actualVer + "/package.zip";
+                string url = "https://github.com/TheCrazyWolf/RegistrantCore/releases/download/" + ActualVer + "/package.zip";
                 
-                Console.WriteLine("{0} > Загрузка началась ({1})", DateTime.Now,url);
+                Console.WriteLine("{0} > Загрузка началась ({1})", DateTime.Now, url);
                 WebClient web = new WebClient();
                 web.DownloadFile(@url, @"package.zip");
 
@@ -128,7 +127,7 @@ namespace CoreUpdater
             {
                 string completeFileName = Path.Combine(destinationDirectoryName, file.FullName);
                 if (file.Name == "")
-                {// Assuming Empty for Directory
+                {
                     Directory.CreateDirectory(Path.GetDirectoryName(completeFileName));
                     continue;
                 }

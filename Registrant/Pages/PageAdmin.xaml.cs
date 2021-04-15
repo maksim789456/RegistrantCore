@@ -1,23 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Registrant.DB;
 
 namespace Registrant.Pages
 {
-    /// <summary>
-    /// Логика взаимодействия для PageAdmin.xaml
-    /// </summary>
-    public partial class PageAdmin : Page
+    public partial class PageAdmin
     {
         public PageAdmin()
         {
@@ -29,10 +18,8 @@ namespace Registrant.Pages
         {
             try
             {
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
-                {
-                    DataGrid_Users.ItemsSource = ef.Users.OrderBy(x => x.IdUser).ToList();
-                }
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                DataGrid_Users.ItemsSource = ef.Users.OrderBy(x => x.IdUser).ToList();
             }
             catch (Exception ex)
             {
@@ -43,25 +30,22 @@ namespace Registrant.Pages
         private void btn_deluser_Click(object sender, RoutedEventArgs e)
         {
             var bt = e.OriginalSource as Button;
-            var current = bt.DataContext as DB.User;
+            var current = bt?.DataContext as User;
 
             if (current != null)
             {
-
                 try
                 {
-                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
-                    {
-                        ef.Remove(current);
-                        ef.SaveChanges();
-                        LoadUser();
-                    }
+                    using RegistrantCoreContext ef = new RegistrantCoreContext();
+                    ef.Remove(current);
+                    ef.SaveChanges();
+                    LoadUser();
                     ContentSave.ShowAsync();
                 }
                 catch (Exception ex)
                 {
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                    ((MainWindow)Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                    ((MainWindow)Application.Current.MainWindow).text_debuger.Text = ex.ToString();
                 }
             }
         }
@@ -78,42 +62,30 @@ namespace Registrant.Pages
             {
                 try
                 {
-                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                    using RegistrantCoreContext ef = new RegistrantCoreContext();
+                    User user = new User
                     {
-                        
-                        DB.User user = new DB.User();
-                        user.Name = tb_name.Text;
-                        user.Login = tb_login.Text;
-                        user.Password = tb_pass.Text;
-                        if (cb_access.SelectedIndex == 0)
-                        {
-                            user.LevelAccess = "kpp";
-                        }
-                        else if (cb_access.SelectedIndex == 1)
-                        {
-                            user.LevelAccess = "reader";
-                        }
-                        else if (cb_access.SelectedIndex == 2)
-                        {
-                            user.LevelAccess = "warehouse";
-                        }
-                        else if (cb_access.SelectedIndex == 3)
-                        {
-                            user.LevelAccess = "shipment";
-                        }
-                        else if (cb_access.SelectedIndex == 4)
-                        {
-                            user.LevelAccess = "admin";
-                        }
-                        ef.Add(user);
-                        ef.SaveChanges();
-                        LoadUser();
-                    }
+                        Name = tb_name.Text,
+                        Login = tb_login.Text,
+                        Password = tb_pass.Text
+                    };
+                    user.LevelAccess = cb_access.SelectedIndex switch
+                    {
+                        0 => "kpp",
+                        1 => "reader",
+                        2 => "warehouse",
+                        3 => "shipment",
+                        4 => "admin",
+                        _ => user.LevelAccess
+                    };
+                    ef.Add(user);
+                    ef.SaveChanges();
+                    LoadUser();
                 }
                 catch (Exception ex)
                 {
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                    ((MainWindow)Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                    ((MainWindow)Application.Current.MainWindow).text_debuger.Text = ex.ToString();
                 }
                 ContentSave.ShowAsync();
             }

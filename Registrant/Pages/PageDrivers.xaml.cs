@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using MessageBox = ModernWpf.MessageBox;
 using Registrant.DB;
 
 namespace Registrant.Pages
@@ -69,33 +68,31 @@ namespace Registrant.Pages
         {
             try
             {
-                using (RegistrantCoreContext ef = new RegistrantCoreContext())
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                Driver driver = new Driver
                 {
-                    Driver driver = new Driver
-                    {
-                        Family = tb_Family.Text,
-                        Name = tb_name.Text,
-                        Patronymic = tb_patronomyc.Text,
-                        Phone = tb_phone.Text,
-                        Attorney = tb_attorney.Text,
-                        Auto = tb_auto.Text,
-                        AutoNumber = tb_autonum.Text,
-                        Passport = tb_passport.Text,
-                        Info = tb_info.Text,
-                        Active = "1",
-                        ServiceInfo = $"{DateTime.Now} {App.ActiveUser} добавил водителя"
-                    };
+                    Family = tb_Family.Text,
+                    Name = tb_name.Text,
+                    Patronymic = tb_patronomyc.Text,
+                    Phone = tb_phone.Text,
+                    Attorney = tb_attorney.Text,
+                    Auto = tb_auto.Text,
+                    AutoNumber = tb_autonum.Text,
+                    Passport = tb_passport.Text,
+                    Info = tb_info.Text,
+                    Active = "1",
+                    ServiceInfo = $"{DateTime.Now} {App.ActiveUser} добавил водителя"
+                };
 
-                    if (tb_contragent.SelectedItem != null)
-                    {
-                        var current = tb_contragent.SelectedItem as Contragent;
-                        driver.IdContragent = current?.IdContragent;
-                    }
-                    
-                    ef.Add(driver);
-                    ef.SaveChanges();
-                    btn_close_Click(sender, e);
+                if (tb_contragent.SelectedItem != null)
+                {
+                    var current = tb_contragent.SelectedItem as Contragent;
+                    driver.IdContragent = current?.IdContragent;
                 }
+                    
+                ef.Add(driver);
+                ef.SaveChanges();
+                btn_close_Click(sender, e);
             }
             catch (Exception ex)
             {
@@ -279,6 +276,7 @@ namespace Registrant.Pages
             ContentInfo.Hide();
         }
 
+        /// <summary>
         /// Открыть окно с расширенной информацией
         /// </summary>
         /// <param name="sender"></param>
@@ -325,8 +323,8 @@ namespace Registrant.Pages
                     var temp = controller.GetDriversAll();
 
                     var data = temp.Where(t => t.Fio.ToUpper().StartsWith(tb_search.Text.ToUpper())).ToList();
-                    var sDOP = temp.Where(t => t.Fio.ToUpper().Contains(tb_search.Text.ToUpper())).ToList();
-                    data.AddRange(sDOP);
+                    var sDop = temp.Where(t => t.Fio.ToUpper().Contains(tb_search.Text.ToUpper())).ToList();
+                    data.AddRange(sDop);
                     var noDupes = data.Distinct().ToList();
                     DataGrid_Drivers.ItemsSource = noDupes;
 
