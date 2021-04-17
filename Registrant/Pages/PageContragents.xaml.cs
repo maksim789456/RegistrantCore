@@ -116,14 +116,34 @@ namespace Registrant.Pages
                         mainWindow.text_debuger.Text = ex.ToString();
                     }
                 }
-            }
+            } 
         }
 
         //Кнопка удалить
         private void btn_delete_Click(object sender, RoutedEventArgs e)
         {
-            var bt = e.OriginalSource as Button;
-            var current = bt?.DataContext as Contragent;
+            if (tb_idcontragent != null)
+            {
+                try
+                {
+                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                    {
+                        var temp = ef.Contragents.FirstOrDefault(x => x.IdContragent == Convert.ToInt64(tb_idcontragent.Text));
+                        temp.Active = "0";
+                        ef.SaveChanges();
+                        ContentEdit.Hide();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                }
+
+            }
+            //Кнопа перенесена в другоме место,
+            /*var bt = e.OriginalSource as Button;
+            var current = bt.DataContext as DB.Contragent;
 
             try
             {
@@ -146,6 +166,7 @@ namespace Registrant.Pages
                     mainWindow.text_debuger.Text = ex.ToString();
                 }
             }
+            }*/
         }
 
         //Обновить
@@ -196,7 +217,6 @@ namespace Registrant.Pages
                 };
                 ef.Add(contragent);
                 ef.SaveChanges();
-                btn_refresh_Click(sender, e);
                 ContentAdd.Hide();
             }
             catch (Exception ex)
