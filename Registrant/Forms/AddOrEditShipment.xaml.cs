@@ -32,7 +32,7 @@ namespace Registrant.Forms
                     var driver = ef.Drivers.FirstOrDefault(x => x.IdDriver == current.IdDriver);
                     if (driver != null)
                     {
-                        tb_contragent.Text = driver.IdContragentNavigation.Name;
+                        tb_contragent.Text = driver.IdContragentNavigation?.Name ?? string.Empty;
                         tb_phone.Text = driver.Phone;
                         tb_autonum.Text = driver.AutoNumber;
                         tb_attorney.Text = driver.Attorney;

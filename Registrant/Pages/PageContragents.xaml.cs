@@ -30,7 +30,7 @@ namespace Registrant.Pages
                 {
                     using RegistrantCoreContext ef = new RegistrantCoreContext();
                     var contragents = ef.Contragents.Where(x => x.Active != "0")
-                        .OrderByDescending(x => x.IdContragent);
+                        .OrderByDescending(x => x.IdContragent).ToList();
                     Dispatcher.Invoke(() => DataGrid_Contragents.ItemsSource = contragents);
                     Dispatcher.Invoke(() => DataGrid_Contragents.Items.Refresh());
                 }
@@ -59,7 +59,7 @@ namespace Registrant.Pages
                 using RegistrantCoreContext ef = new RegistrantCoreContext();
                 var contragents = ef.Contragents
                     .Where(x => x.Active != "0")
-                    .OrderByDescending(x => x.IdContragent);
+                    .OrderByDescending(x => x.IdContragent).ToList();
                 DataGrid_Contragents.ItemsSource = contragents;
             }
             catch (Exception ex)
@@ -180,7 +180,7 @@ namespace Registrant.Pages
                 using RegistrantCoreContext ef = new RegistrantCoreContext();
                 var contragents = ef.Contragents
                     .Where(x => x.Active != "0")
-                    .OrderByDescending(x => x.IdContragent);
+                    .OrderByDescending(x => x.IdContragent).ToList();
                 DataGrid_Contragents.ItemsSource = null;
                 DataGrid_Contragents.ItemsSource = contragents;
             }

@@ -31,7 +31,7 @@
                 <DataGridTextColumn Header="Время" Binding="{Binding PlanTime}" />
                 <DataGridTextColumn Header="Контрагент" Binding="{Binding Contragent}"/>
                 <DataGridTextColumn Header="Склад" Binding="{Binding Sklad}"/>
-                <DataGridTextColumn Header="ФИО" Binding="{Binding FIOTelephone}"/>
+                <DataGridTextColumn Header="ФИО" Binding="{Binding FioTelephone}"/>
                 <DataGridTextColumn Header="Доверенность" Binding="{Binding Attorney}"/>
                 <DataGridTextColumn Header="Марка т/c" Binding="{Binding Auto}"/>
                 <DataGridTextColumn Header="№ реализации" Binding="{Binding NumRealese}"/>

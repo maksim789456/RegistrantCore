@@ -35,7 +35,7 @@
             <DataGrid x:Name="DataGrid_Drivers" Padding="0 10 0 0" AutoGenerateColumns="False" IsReadOnly="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="№" Binding="{Binding IdDriver}"/>
-                    <DataGridTextColumn Header="ФИО" Binding="{Binding FIO}"/>
+                    <DataGridTextColumn Header="ФИО" Binding="{Binding Fio}"/>
                     <DataGridTextColumn Header="Телефон" Binding="{Binding Phone}"/>
                     <DataGridTextColumn Header="Контрагент" Binding="{Binding Contragent}"/>
                     <DataGridTextColumn Header="Доверенность" Binding="{Binding Attorney}"/>

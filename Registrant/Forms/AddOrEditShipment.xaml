@@ -29,11 +29,11 @@
             <StackPanel Orientation="Horizontal">
                 <StackPanel >
                     <TextBlock Text="Водитель" Style="{StaticResource BodyTextBlockStyle}"  Padding="0 0 0 0"/>
-                    <ComboBox IsTextSearchEnabled="True" IsEditable="True" TextSearch.TextPath="FIO"  x:Name="cb_drivers" SelectionChanged="cb_drivers_SelectionChanged" Width="410">
+                    <ComboBox IsTextSearchEnabled="True" IsEditable="True" TextSearch.TextPath="Fio"  x:Name="cb_drivers" SelectionChanged="cb_drivers_SelectionChanged" Width="410">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Name="DriverFamily" Text="{Binding FIO}" Margin="0 0 5 0"/>
+                                    <TextBlock Name="DriverFamily" Text="{Binding Fio}" Margin="0 0 5 0"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>

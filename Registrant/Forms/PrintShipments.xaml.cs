@@ -47,7 +47,7 @@ namespace Registrant.Forms
             {
                 FileName = "Реестр", 
                 DefaultExt = ".xls", 
-                Filter = "Говнофайлы (.xls)|*.xls"
+                Filter = "Excel файлы (.xls)|*.xls"
             };
 
             if (dlg.ShowDialog() == true)
