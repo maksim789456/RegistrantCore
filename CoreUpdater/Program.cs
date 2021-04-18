@@ -10,6 +10,7 @@ namespace CoreUpdater
     class Program
     {
         private static string ActualVer { get; set; }
+        
         static void Main(string[] args)
         {
             Console.WriteLine("============================================");
@@ -27,7 +28,9 @@ namespace CoreUpdater
             CheckVersion();
             DownloadPackage();
             Unpack();
-            CleanUP();
+#if !DEBUG
+            Cleanup();
+#endif
             Logger.LogWithTime("Обновление завершено");
             Process.Start("Registrant.exe");
             Console.ReadKey();
@@ -42,7 +45,7 @@ namespace CoreUpdater
                 ActualVer = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualVer.txt");
                 Logger.LogWithTime($"Последняя версия: {ActualVer}");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Logger.LogWithTime("ОШИБКА ОБНОВЛЕНИЯ");
                 Logger.LogWithTime("Не удалось получить список актуальных версии программного обеспечения.");
@@ -74,7 +77,7 @@ namespace CoreUpdater
                 }
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Logger.LogWithTime("ОШИБКА ОБНОВЛЕНИЯ");
                 Logger.LogWithTime("Не удалось получить список актуальных версии программного обеспечения.");
@@ -85,19 +88,19 @@ namespace CoreUpdater
 
         public static void Unpack()
         {
-            Console.WriteLine("");
+            Logger.EmptyString();
             Logger.LogWithTime("ВНИМАНИЕ!");
             Logger.LogWithTime("Требуется подключение к интернету, во время обновления не пытайтесь");
             Logger.LogWithTime("закрыть это окно, это может привести к сбою обновления и может откразится на");
             Logger.LogWithTime("работе программы");
-            Console.WriteLine("");
+            Logger.EmptyString();
             Logger.LogWithTime("Убедитесь, что RegistrantCore сейчас закрыт");
             Logger.LogWithTime("Ожидание");
             Thread.Sleep(3000);
             try
             {
                 Logger.LogWithTime("Распаковка пакета и применение обновления");
-                ZipArchiveExtensions.ExtractToDirectory(ZipFile.OpenRead("./package.zip"), "./", true);
+                ZipFile.OpenRead("./package.zip").ExtractToDirectory("./", true);
                 Logger.LogWithTime("Развертывание завершено");
             }
             catch (Exception ex)
@@ -107,10 +110,10 @@ namespace CoreUpdater
             }
         }
 
-        public static void CleanUP()
+        public static void Cleanup()
         {
             Logger.LogWithTime("Очистка кеша");
-            //File.Delete(@"package.zip");
+            File.Delete(@"package.zip");
             Logger.LogWithTime("Очистка завершена");
         }
     }
