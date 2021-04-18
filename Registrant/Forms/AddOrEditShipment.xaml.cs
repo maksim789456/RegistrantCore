@@ -156,7 +156,7 @@ namespace Registrant.Forms
                 try
                 {
                     using RegistrantCoreContext ef = new RegistrantCoreContext();
-                    var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == Convert.ToInt64(idcont.Text));
+                    var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == Convert.ToInt32(idcont.Text));
 
                     if (shipment != null)
                     {
@@ -289,7 +289,7 @@ namespace Registrant.Forms
                 try
                 {
                     using RegistrantCoreContext ef = new RegistrantCoreContext();
-                    var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == Convert.ToInt64(idcont.Text));
+                    var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == Convert.ToInt32(idcont.Text));
 
                     if (shipment != null)
                     {
