@@ -34,24 +34,10 @@ namespace Registrant
             thread.Start();
         }
 
-        /// Открытие дебага
-        private void btn_debug_Click(object sender, RoutedEventArgs e)
-        {
-            text_error.Visibility = Visibility.Visible;
-        }
-
-        //Кнопка повторить попытку
-        private void btn_tryconnect_Click(object sender, RoutedEventArgs e)
-        {
-            ContentError.Hide();
-            Thread thread1 = new Thread(TestConnect);
-            thread1.Start();
-        }
-
         /// Проверка существует ли вообще подключение к серверу
         void TestConnect()
         {
-            Thread.Sleep(2000);
+            //Thread.Sleep(2000);
             Dispatcher.Invoke(() => ContentWait.ShowAsync());
 
             try
@@ -69,110 +55,78 @@ namespace Registrant
             }
         }
 
-        /// Кнопка с редактированием настроек подключения
-        private void btn_opensettings_Click(object sender, RoutedEventArgs e)
-        {
-            Forms.EditConnect edit = new Forms.EditConnect();
-            edit.ShowDialog();
-        }
-
-        /// Действие на нажатие на кнопку Войти
-        private void btn_enter_Click(object sender, RoutedEventArgs e)
-        {
-            Settings.User.Default.login = tb_login.Text;
-            Settings.User.Default.Save();
-
-            try
-            {
-                using RegistrantCoreContext ef = new RegistrantCoreContext();
-                var user = ef.Users.FirstOrDefault(x => tb_login.Text == x.Login && tb_password.Password == x.Password);
-
-                if (user != null)
-                {
-                    ContentAuth.Hide();
-                    App.SetActiveUser(user.Name);
-                    App.SetLevelAccess(user.LevelAccess);
-                    NavUI.PaneTitle = "РЕГИСТРАНТ (" + user.Name + ")";
-                    nav_userset.Content = user.Name;
-                    _pageUser = new Pages.PageUser(user.IdUser);
-                    Verify();
-                }
-            }
-            catch (Exception ex)
-            {
-                Dispatcher.Invoke(() => ContentWait.Hide());
-                Dispatcher.Invoke(() => ContentError.ShowAsync());
-                Dispatcher.Invoke(() => text_error.Text = ex.ToString());
-            }
-        }
-
         /// Проверяем кто он по масти
         void Verify()
         {
             switch (App.LevelAccess)
             {
-                case "admin":
-                    nav_admin.Visibility = Visibility.Visible;
-                    nav_contragents.Visibility = Visibility.Visible;
-                    nav_drivers.Visibility = Visibility.Visible;
-                    nav_jurnalkpp.Visibility = Visibility.Visible;
-                    nav_jurnalshipment.Visibility = Visibility.Visible;
-                    nav_userset.Visibility = Visibility.Visible;
+                Dispatcher.Invoke(() => nav_admin.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => nav_contragents.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => nav_jurnalkpp.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
 
-                    //Иниципализация нужных страниц под ролей
-                    _pageKpp = new Pages.PageKPP();
-                    _pageContragents = new Pages.PageContragents();
-                    _pageDrivers = new Pages.PageDrivers();
-                    _pageShipments = new Pages.PageShipments();
-                    _pageAdmin = new Pages.PageAdmin();
+                //Иниципализация нужных страниц под ролей
+                Dispatcher.Invoke(() => pageKPP = new Pages.PageKPP());
+                Dispatcher.Invoke(() => pageContragents = new Pages.PageContragents());
+                Dispatcher.Invoke(() => pageDrivers = new Pages.PageDrivers());
+                Dispatcher.Invoke(() => pageShipments = new Pages.PageShipments());
+                Dispatcher.Invoke(() => pageAdmin = new Pages.PageAdmin());
 
-                    FrameContent.Content = _pageShipments;
-                    break;
-                case "reader":
-                    nav_drivers.Visibility = Visibility.Visible;
-                    nav_jurnalshipment.Visibility = Visibility.Visible;
-                    nav_userset.Visibility = Visibility.Visible;
+                Dispatcher.Invoke(() => FrameContent.Content = pageShipments);
+            }
+            else if (App.LevelAccess == "reader")
+            {
+                Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
 
-                    _pageDrivers = new Pages.PageDrivers();
-                    _pageShipments = new Pages.PageShipments();
+                Dispatcher.Invoke(() => pageDrivers = new Pages.PageDrivers());
+                Dispatcher.Invoke(() => pageShipments = new Pages.PageShipments());
 
-                    FrameContent.Content = _pageShipments;
-                    break;
-                case "warehouse":
-                    nav_drivers.Visibility = Visibility.Visible;
-                    nav_jurnalshipment.Visibility = Visibility.Visible;
-                    nav_userset.Visibility = Visibility.Visible;
+                Dispatcher.Invoke(() => FrameContent.Content = pageShipments);
+            }
+            else if (App.LevelAccess == "warehouse")
+            {
+                Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
 
-                    _pageContragents = new Pages.PageContragents();
-                    _pageDrivers = new Pages.PageDrivers();
-                    _pageShipments = new Pages.PageShipments();
+                Dispatcher.Invoke(() => pageContragents = new Pages.PageContragents());
+                Dispatcher.Invoke(() =>  pageDrivers = new Pages.PageDrivers());
+                Dispatcher.Invoke(() => pageShipments = new Pages.PageShipments());
 
-                    FrameContent.Content = _pageShipments;
-                    break;
-                case "shipment":
-                    nav_jurnalshipment.Visibility = Visibility.Visible;
-                    nav_contragents.Visibility = Visibility.Visible;
-                    nav_drivers.Visibility = Visibility.Visible;
-                    nav_userset.Visibility = Visibility.Visible;
+                Dispatcher.Invoke(() => FrameContent.Content = pageShipments);
 
-                    _pageContragents = new Pages.PageContragents();
-                    _pageDrivers = new Pages.PageDrivers();
-                    _pageShipments = new Pages.PageShipments();
+            }
+            else if (App.LevelAccess == "shipment")
+            {
+                Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => nav_contragents.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
 
-                    FrameContent.Content = _pageShipments;
-                    break;
-                case "kpp":
-                    nav_jurnalkpp.Visibility = Visibility.Visible;
-                    nav_userset.Visibility = Visibility.Visible;
-                    _pageKpp = new Pages.PageKPP();
+                Dispatcher.Invoke(() => pageContragents = new Pages.PageContragents());
+                Dispatcher.Invoke(() => pageDrivers = new Pages.PageDrivers());
+                Dispatcher.Invoke(() => pageShipments = new Pages.PageShipments());
 
-                    FrameContent.Content = _pageKpp;
-                    break;
+                Dispatcher.Invoke(() => FrameContent.Content = pageShipments);
+            }
+            else if (App.LevelAccess == "kpp")
+            {
+                Dispatcher.Invoke(() => nav_jurnalkpp.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => pageKPP = new Pages.PageKPP());
+
+                Dispatcher.Invoke(() => FrameContent.Content = pageKPP);
             }
         }
 
         void CheckForUpdates()
         {
+            Thread.Sleep(1500);
+            Dispatcher.Invoke(() => ContentCheckingUpdate.ShowAsync());
             WebClient web = new WebClient();
             try
             {
@@ -181,10 +135,11 @@ namespace Registrant
                 act = act.Replace("\n", "");
                 act = act.Replace(".", ",");
 
-                string currentVersion = Settings.App.Default.AppVersion;
-                currentVersion = currentVersion.Replace(".", ",");
-                decimal current = decimal.Parse(currentVersion);
-                decimal actual = decimal.Parse(act);
+                string currentstring = Settings.App.Default.AppVersion;
+                currentstring = currentstring.Replace(".", ",");
+                decimal Current = decimal.Parse(currentstring);
+                decimal Actual = decimal.Parse(Act);
+                Dispatcher.Invoke(() => ContentCheckingUpdate.Hide());
 
                 if (actual > current)
                 {
@@ -210,9 +165,71 @@ namespace Registrant
             }
             catch (Exception ex)
             {
-                //MessageBox.Show(ex.ToString());
-                Dispatcher.Invoke(() => txt_desc.Text = ex.ToString());
+                Dispatcher.Invoke(() => ContentCheckingUpdate.Hide());
                 TestConnect();
+            }
+        }
+
+
+        /// Открытие дебага
+        private void btn_debug_Click(object sender, RoutedEventArgs e)
+        {
+            text_error.Visibility = Visibility.Visible;
+        }
+
+        //Кнопка повторить попытку
+        private void btn_tryconnect_Click(object sender, RoutedEventArgs e)
+        {
+            ContentError.Hide();
+            Thread thread1 = new Thread(TestConnect);
+            thread1.Start();
+        }
+
+        /// Кнопка с редактированием настроек подключения
+        private void btn_opensettings_Click(object sender, RoutedEventArgs e)
+        {
+            Forms.EditConnect edit = new Forms.EditConnect();
+            edit.ShowDialog();
+        }
+
+        /// Действие на нажатие на кнопку Войти
+        private void btn_enter_Click(object sender, RoutedEventArgs e)
+        {
+            Settings.User.Default.login = tb_login.Text;
+            Settings.User.Default.Save();
+
+            try
+            {
+                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                {
+
+                    var user = ef.Users.Where(x => tb_login.Text == x.Login && tb_password.Password == x.Password).FirstOrDefault();
+
+                    if (user != null)
+                    {
+                        ContentAuth.Hide();
+                        App.SetActiveUser(user.Name);
+                        App.SetLevelAccess(user.LevelAccess);
+                        NavUI.PaneTitle = "РЕГИСТРАНТ (" + user.Name + ")";
+                        nav_userset.Content = user.Name;
+                        pageUser = new Pages.PageUser(user.IdUser);
+
+
+                        Thread thread = new Thread(Verify);
+                        thread.Start();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Логин и/или пароль неверный", "Ошибка входа", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke(() => ContentWait.Hide());
+                Dispatcher.Invoke(() => ContentError.ShowAsync());
+                Dispatcher.Invoke(() => text_error.Text = ex.ToString());
             }
         }
 
