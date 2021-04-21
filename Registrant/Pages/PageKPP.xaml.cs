@@ -72,7 +72,7 @@ namespace Registrant.Pages
             if (current != null)
             {
                 MessageBoxResult? result = MessageBox.Show(
-                    "Сменить статус водителя" + current.Fio + " на Прибыл?", "Внимание", MessageBoxButton.YesNo,
+                    "Сменить статус водителя " + current.Fio + " на Прибыл?", "Внимание", MessageBoxButton.YesNo,
                     MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                 {
