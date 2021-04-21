@@ -177,40 +177,43 @@ namespace Registrant.Pages
 
         private void btn_add_add_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if (tb_family.Text != "")
             {
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                try
                 {
-                    DB.Shipment shipment = new DB.Shipment
+                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                     {
-                        IdDriverNavigation = new DB.Driver
-                        {
-                            Family = tb_family.Text,
-                            Name = tb_name.Text,
-                            Patronymic = tb_patronymic.Text,
-                            Phone = tb_phone.Text,
-                            AutoNumber = tb_autonum.Text,
-                            Passport = tb_passport.Text,
-                            Info = tb_info.Text,
-                            ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил карточку водителя"
-                        },
-                        IdTimeNavigation = new DB.Time
-                        {
-                            DateTimeFactRegist = DateTime.Now
-                        },
-                        ServiceInfo = DateTime.Now + " " + App.ActiveUser + " каскадное добавление с карточкой водителя"
-                    };
+                        DB.Shipment shipment = new DB.Shipment();
+                        shipment.IdDriverNavigation = new DB.Driver();
+                        shipment.IdTimeNavigation = new DB.Time();
+                        shipment.IdDriverNavigation.Family = tb_family.Text;
+                        shipment.IdDriverNavigation.Name = tb_name.Text;
+                        shipment.IdDriverNavigation.Patronymic = tb_patronymic.Text;
+                        shipment.IdDriverNavigation.Phone = tb_phone.Text;
+                        shipment.IdDriverNavigation.AutoNumber = tb_autonum.Text;
+                        shipment.IdDriverNavigation.Passport = tb_passport.Text;
+                        shipment.IdDriverNavigation.Info = tb_info.Text;
+                        shipment.IdDriverNavigation.ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил карточку водителя";
 
-                    ef.Add(shipment);
-                    ef.SaveChanges();
-                    ContentAdd.Hide();
-                    btn_refresh_Click(sender, e);
+                        shipment.IdTimeNavigation.DateTimeFactRegist = DateTime.Now;
+
+                        shipment.ServiceInfo = DateTime.Now + " " + App.ActiveUser + " каскадное добавление с карточкой водителя";
+
+                        ef.Add(shipment);
+                        ef.SaveChanges();
+                        ContentAdd.Hide();
+                        btn_refresh_Click(sender, e);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
                 }
             }
-            catch (Exception ex)
+            else
             {
-                ((MainWindow) Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                ((MainWindow) Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                MessageBox.Show("Введите хотябы фамилию водителя!", "Внимание!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

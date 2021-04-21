@@ -29,6 +29,7 @@ namespace Registrant.Controllers
                     && x.IdTimeNavigation.DateTimeFactRegist.Value == null);
                 foreach (var item in shipments)
                 {
+                    var temp = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date && x.IdTimeNavigation.DateTimeFactRegist.Value == null).OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
                     PlanShipment shipment = new PlanShipment(item);
                     PlanShipments.Add(shipment);
                 }

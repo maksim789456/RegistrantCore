@@ -30,6 +30,7 @@ namespace Registrant.Controllers
                 
                 foreach (var item in shipments)
                 {
+                    var temp = ef.Shipments.Where(x => (x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date) && x.Active != "0").OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
                     Shipments shipment = new Shipments(item);
                     Shipments.Add(shipment);
                 }
@@ -62,6 +63,7 @@ namespace Registrant.Controllers
                 {
                     Shipments shipment = new Shipments(item);
                     Shipments.Add(shipment);
+                    var temp = ef.Shipments.OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
                 }
             }
             catch (Exception ex)
@@ -94,6 +96,7 @@ namespace Registrant.Controllers
                 
                 foreach (var item in shipments)
                 {
+                    var temp = ef.Shipments.Where(x => ((x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date) && x.IdTimeNavigation.DateTimeLeft == null && x.IdTimeNavigation.DateTimeArrive == null && x.Active != "0")).OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
                     Shipments shipment = new Shipments(item);
                     Shipments.Add(shipment);
                 }
@@ -130,6 +133,7 @@ namespace Registrant.Controllers
                 
                 foreach (var item in shipments)
                 {
+                    var temp = ef.Shipments.Where(x => ((x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date) && x.IdTimeNavigation.DateTimeArrive != null && x.IdTimeNavigation.DateTimeLeft == null && x.Active != "0")).OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
                     Shipments shipment = new Shipments(item);
                     Shipments.Add(shipment);
                 }
@@ -164,6 +168,7 @@ namespace Registrant.Controllers
                 
                 foreach (var item in shipments)
                 {
+                    var temp = ef.Shipments.Where(x => ((x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date) && x.IdTimeNavigation.DateTimeLeft != null && x.Active != "0")).OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
                     Shipments shipment = new Shipments(item);
                     Shipments.Add(shipment);
                 }

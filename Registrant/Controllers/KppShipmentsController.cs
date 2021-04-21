@@ -33,6 +33,7 @@ namespace Registrant.Controllers
 
                 foreach (var item in shipments)
                 {
+                    var temp = ef.Shipments.Where(x => ((x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date) && x.IdTimeNavigation.DateTimeLeft == null && x.IdTimeNavigation.DateTimeFactRegist != null && x.Active != "0")).OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
                     KppShipments shipment = new KppShipments(item);
                     DriverShipments.Add(shipment);
                 }

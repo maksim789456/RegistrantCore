@@ -54,6 +54,7 @@ namespace Registrant.Controllers
                 {
                     Drivers driver = new Drivers(item);
                     Driver.Add(driver);
+                    var temp = ef.Drivers.Where(x => x.Active != "0" | x.IdDriver == id).OrderBy(x => x.Family);
                 }
             }
             catch (Exception ex)
@@ -81,6 +82,7 @@ namespace Registrant.Controllers
                 {
                     Drivers driver = new Drivers(item);
                     Driver.Add(driver);
+                    var temp = ef.Drivers.Where(x => x.Active != "0").OrderBy(x => x.Family);
                 }
             }
             catch (Exception ex)

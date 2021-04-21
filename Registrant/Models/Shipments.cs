@@ -5,6 +5,7 @@ namespace Registrant.Models
 {
     public class Shipments : DB.Shipment
     {
+        //Отгрузка
         //Водитель
         public string Fio { get; set; }
         public string Family { get; set; }
@@ -21,8 +22,7 @@ namespace Registrant.Models
 
         public string TextStatus { get; set; }
 
-        public Visibility LoadButtonVisibility { get; set; }
-        public Visibility EndLoadButtonVisibility { get; set; }
+        public string Color { get; set; }
 
         public Shipments(DB.Shipment shipment)
         {
@@ -39,7 +39,7 @@ namespace Registrant.Models
             Description = shipment.Description;
             StoreKeeper = shipment.StoreKeeper;
             ServiceInfo = shipment.ServiceInfo;
-            Contragent = shipment.IdDriverNavigation?.IdContragentNavigation?.Name;
+            Contragent = shipment.IdContragentNavigation?.Name;
 
             Family = shipment.IdDriverNavigation?.Family;
             Name = shipment.IdDriverNavigation?.Name;
@@ -81,86 +81,36 @@ namespace Registrant.Models
 
             if (shipment.IdTimeNavigation.DateTimeLeft != null)
             {
-                TextStatus = $"Покинул склад ({DateTimeLeft})";
-                if (App.LevelAccess == "admin" || App.LevelAccess == "warehouse")
-                {
-                    EndLoadButtonVisibility = Visibility.Collapsed;
-                    LoadButtonVisibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    EndLoadButtonVisibility = Visibility.Collapsed;
-                    LoadButtonVisibility = Visibility.Collapsed;
-                }
+                TextStatus = "Покинул склад (" + DateTimeLeft.ToString() + ")";
             }
             else if (shipment.IdTimeNavigation?.DateTimeLeft == null && shipment.IdTimeNavigation?.DateTimeEndLoad != null)
             {
-                TextStatus = $"Отгрузка завершена ({DateTimeEndLoad})";
-                if (App.LevelAccess == "admin" || App.LevelAccess == "warehouse")
-                {
-                    EndLoadButtonVisibility = Visibility.Collapsed;
-                    LoadButtonVisibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    EndLoadButtonVisibility = Visibility.Collapsed;
-                    LoadButtonVisibility = Visibility.Collapsed;
-                }
+                TextStatus = "Отгрузка завершена (" + DateTimeEndLoad.ToString() + ")";
             }
             else if (shipment.IdTimeNavigation?.DateTimeEndLoad == null && shipment.IdTimeNavigation?.DateTimeLoad != null)
             {
-                TextStatus = $"Отгрузка ({DateTimeLoad})";
-                if (App.LevelAccess == "admin" || App.LevelAccess == "warehouse")
-                {
-                    EndLoadButtonVisibility = Visibility.Visible;
-                    LoadButtonVisibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    EndLoadButtonVisibility = Visibility.Collapsed;
-                    LoadButtonVisibility = Visibility.Collapsed;
-                }
+                TextStatus = "Отгрузка (" + DateTimeLoad.ToString() + ")";
             }
             else if (shipment.IdTimeNavigation?.DateTimeLoad == null && shipment.IdTimeNavigation?.DateTimeArrive != null)
             {
-                TextStatus = $"На территории склада ({DateTimeArrive})";
-                if (App.LevelAccess == "admin" || App.LevelAccess == "warehouse")
-                {
-                    EndLoadButtonVisibility = Visibility.Collapsed;
-                    LoadButtonVisibility = Visibility.Visible;
-                }
-                else
-                {
-                    EndLoadButtonVisibility = Visibility.Collapsed;
-                    LoadButtonVisibility = Visibility.Collapsed;
-                }
+                TextStatus = "На территории склада (" + DateTimeArrive.ToString() + ")";
+                Color = "#FFF9C38B";
+
             }
             else if (shipment.IdTimeNavigation?.DateTimeArrive == null && shipment.IdTimeNavigation?.DateTimeFactRegist != null)
             {
-                TextStatus = $"Зарегистрирован ({DateTimeFactRegist})";
-                if (App.LevelAccess == "admin" || App.LevelAccess == "warehouse")
-                {
-                    EndLoadButtonVisibility = Visibility.Collapsed;
-                    LoadButtonVisibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    EndLoadButtonVisibility = Visibility.Collapsed;
-                    LoadButtonVisibility = Visibility.Collapsed;
-                }
+                TextStatus = "Зарегистрирован (" + DateTimeFactRegist.ToString() + ")";
+                Color = "#FFFFEEDC";
 
             }
             else if (shipment.IdTimeNavigation?.DateTimeFactRegist == null && shipment.IdTimeNavigation?.DateTimePlanRegist != null)
             {
                 TextStatus = "";
-                EndLoadButtonVisibility = Visibility.Collapsed;
-                LoadButtonVisibility = Visibility.Collapsed;
             }
             else if (shipment.IdTimeNavigation?.DateTimePlanRegist == null && shipment.IdTimeNavigation?.DateTimeFactRegist != null)
             {
-                TextStatus = $"Зарегистрирован ({DateTimeFactRegist})";
-                EndLoadButtonVisibility = Visibility.Collapsed;
-                LoadButtonVisibility = Visibility.Collapsed;
+                TextStatus =  "Зарегистрирован (" + DateTimeFactRegist.ToString() + ")";
+                Color = "#FFFFEEDC";
             }
 
         }

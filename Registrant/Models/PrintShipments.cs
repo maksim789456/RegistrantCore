@@ -4,8 +4,8 @@ namespace Registrant.Models
 {
     public class PrintShipments : DB.Shipment
     {
+        public string DatePlan { get; set; }
         public string FioTelephone { get; set; }
-        public DateTime DatePlan { get; set; }
 
         public string Contragent { get; set; }
         public string PlanDate { get; set; }
@@ -35,18 +35,17 @@ namespace Registrant.Models
             if (shipment.IdDriverNavigation != null)
                 FioTelephone = $"{shipment.IdDriverNavigation.Family} {shipment.IdDriverNavigation.Name} {shipment.IdDriverNavigation.Patronymic} {shipment.IdDriverNavigation.Phone}";
 
-            if (shipment.IdTimeNavigation.DateTimePlanRegist.HasValue)
-                DatePlan = shipment.IdTimeNavigation.DateTimePlanRegist.Value;
-            DateArrive = shipment.IdTimeNavigation.DateTimeArrive.ToString();
-            DateLoad = shipment.IdTimeNavigation.DateTimeLoad.ToString();
-            DateEndLoad = shipment.IdTimeNavigation.DateTimeEndLoad.ToString();
+            DatePlan = shipment.IdTimeNavigation.DateTimePlanRegist.HasValue ? shipment.IdTimeNavigation.DateTimePlanRegist.Value.ToString() : "";
+            DateArrive = shipment.IdTimeNavigation.DateTimeArrive.HasValue ? shipment.IdTimeNavigation.DateTimeArrive.Value.ToString() : "";
+            DateLoad = shipment.IdTimeNavigation.DateTimeLoad.HasValue ? shipment.IdTimeNavigation.DateTimeLoad.Value.ToString() : "";
+            DateEndLoad = shipment.IdTimeNavigation.DateTimeEndLoad.HasValue ? shipment.IdTimeNavigation.DateTimeEndLoad.Value.ToString() : "";
 
-            Contragent = shipment.IdDriverNavigation?.IdContragentNavigation?.Name;
+            Contragent = shipment.IdContragentNavigation?.Name;
             Attorney = shipment.IdDriverNavigation?.Attorney;
             Auto = shipment.IdDriverNavigation?.Auto + " " + shipment.IdDriverNavigation?.AutoNumber;
 
-            PlanDate = DatePlan.ToShortDateString();
-            PlanTime = DatePlan.ToShortTimeString();
+            PlanDate = DatePlan;
+            //PlanTime = DatePlan.ToShortTimeString();
 
             DateFact = shipment.IdTimeNavigation.DateTimeFactRegist.ToString();
             DateLeft = shipment.IdTimeNavigation.DateTimeLeft.ToString();
@@ -57,6 +56,7 @@ namespace Registrant.Models
             TochkaLoad = shipment.TochkaLoad;
             ServiceInfo = shipment.ServiceInfo;
 
+            
             Destination = shipment.Destination;
             Nomenclature = shipment.Nomenclature;
             Size = shipment.Size;

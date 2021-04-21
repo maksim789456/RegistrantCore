@@ -66,42 +66,39 @@ namespace Registrant.Pages
         /// Кнопка добавления водителя
         private void btn_add_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if (tb_Family.Text != "")
             {
-                using RegistrantCoreContext ef = new RegistrantCoreContext();
-                Driver driver = new Driver
+                try
                 {
-                    Family = tb_Family.Text,
-                    Name = tb_name.Text,
-                    Patronymic = tb_patronomyc.Text,
-                    Phone = tb_phone.Text,
-                    Attorney = tb_attorney.Text,
-                    Auto = tb_auto.Text,
-                    AutoNumber = tb_autonum.Text,
-                    Passport = tb_passport.Text,
-                    Info = tb_info.Text,
-                    Active = "1",
-                    ServiceInfo = $"{DateTime.Now} {App.ActiveUser} добавил водителя"
-                };
+                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                    {
+                        DB.Driver driver = new DB.Driver();
+                        driver.Family = tb_Family.Text;
+                        driver.Name = tb_name.Text;
+                        driver.Patronymic = tb_patronomyc.Text;
+                        driver.Phone = tb_phone.Text;
 
-                if (tb_contragent.SelectedItem != null)
-                {
-                    var current = tb_contragent.SelectedItem as Contragent;
-                    driver.IdContragent = current?.IdContragent;
+                        driver.Attorney = tb_attorney.Text;
+                        driver.Auto = tb_auto.Text;
+                        driver.AutoNumber = tb_autonum.Text;
+                        driver.Passport = tb_passport.Text;
+                        driver.Info = tb_info.Text;
+                        driver.Active = "1";
+                        driver.ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил водителя";
+                        ef.Add(driver);
+                        ef.SaveChanges();
+                        btn_close_Click(sender, e);
+                    }
                 }
-                    
-                ef.Add(driver);
-                ef.SaveChanges();
-                btn_close_Click(sender, e);
+                catch (Exception ex)
+                {
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                }
             }
-            catch (Exception ex)
+            else
             {
-                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
-                if (mainWindow != null)
-                {
-                    mainWindow.ContentErrorText.ShowAsync();
-                    mainWindow.text_debuger.Text = ex.ToString();
-                }
+                MessageBox.Show("Введите хотябы фамилию водителя!", "Внимание!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -131,10 +128,6 @@ namespace Registrant.Pages
                         tb_name.Text = driver.Name;
                         tb_patronomyc.Text = driver.Patronymic;
                         tb_phone.Text = driver.Phone;
-
-                        tb_contragent.ItemsSource = ef.Contragents.Where(x => x.Active != "0").ToList();
-                        tb_contragent.SelectedItem =
-                            ef.Contragents.FirstOrDefault(x => x.IdContragent == driver.IdContragent);
 
                         tb_attorney.Text = driver.Attorney;
                         tb_auto.Text = driver.Auto;
@@ -194,10 +187,11 @@ namespace Registrant.Pages
 
             try
             {
-                using RegistrantCoreContext ef = new RegistrantCoreContext();
-                tb_contragent.ItemsSource = ef.Contragents.Where(x => x.Active != "0").ToList();
-                btn_add.Visibility = Visibility.Visible;
-                btn_delete.Visibility = Visibility.Collapsed;
+                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                {
+                    btn_add.Visibility = Visibility.Visible;
+                    btn_delete.Visibility = Visibility.Collapsed;
+                }
             }
             catch (Exception ex)
             {
@@ -213,17 +207,16 @@ namespace Registrant.Pages
         /// Очистка
         void ClearTextbox()
         {
-            tb_id.Text = "";
-            tb_Family.Text = "";
-            tb_name.Text = "";
-            tb_patronomyc.Text = "";
-            tb_phone.Text = "";
-            tb_contragent.ItemsSource = null;
-            tb_attorney.Text = "";
-            tb_auto.Text = "";
-            tb_autonum.Text = "";
-            tb_passport.Text = "";
-            tb_info.Text = "";
+            tb_id.Text = null;
+            tb_Family.Text = null;
+            tb_name.Text = null;
+            tb_patronomyc.Text = null;
+            tb_phone.Text = null;
+            tb_attorney.Text = null;
+            tb_auto.Text = null;
+            tb_autonum.Text = null;
+            tb_passport.Text = null;
+            tb_info.Text = null;
         }
 
         /// Непосредственное редактирование
@@ -242,16 +235,23 @@ namespace Registrant.Pages
 
                     if (tb_contragent.SelectedItem != null)
                     {
-                        var current = tb_contragent.SelectedItem as Contragent;
-                        driver.IdContragent = current?.IdContragent;
+                        var driver = ef.Drivers.FirstOrDefault(x => x.IdDriver == Convert.ToInt64(tb_id.Text));
+                        driver.Family = tb_Family.Text;
+                        driver.Name = tb_name.Text;
+                        driver.Patronymic = tb_patronomyc.Text;
+                        driver.Phone = tb_phone.Text;
+
+                        driver.Attorney = tb_attorney.Text;
+                        driver.Auto = tb_auto.Text;
+                        driver.AutoNumber = tb_autonum.Text;
+                        driver.Passport = tb_passport.Text;
+                        driver.Info = tb_info.Text;
+                        driver.ServiceInfo = driver.ServiceInfo + "\n" + DateTime.Now + " " + App.ActiveUser + " внес изменения";
+                        ef.SaveChanges();
+                        btn_close_Click(sender, e);
+                        ContentAddEdit.Hide();
+                        //btn_refresh_Click(sender, e);
                     }
-                        
-                    driver.Attorney = tb_attorney.Text;
-                    driver.Auto = tb_auto.Text;
-                    driver.AutoNumber = tb_autonum.Text;
-                    driver.Passport = tb_passport.Text;
-                    driver.Info = tb_info.Text;
-                    driver.ServiceInfo = driver.ServiceInfo + "\n" + DateTime.Now + " " + App.ActiveUser + " внес изменения";
                 }
 
                 ef.SaveChanges();
