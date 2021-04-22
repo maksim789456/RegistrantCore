@@ -31,7 +31,7 @@ namespace Registrant.Controllers
                     && x.IdTimeNavigation.DateTimeLeft == null
                     && x.IdTimeNavigation.DateTimeFactRegist != null
                     && x.Active != "0")
-                    .OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
+                    .OrderBy(x => x.IdDriverNavigation.Family);
 
                 foreach (var item in shipments)
                 {

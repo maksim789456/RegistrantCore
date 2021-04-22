@@ -14,8 +14,8 @@ namespace Registrant.Models
         public string TextStatus { get; set; }
 
         public string NumAuto { get; set; }
-        public string btn_left { get; set; }
-        public string btn_arrive { get; set; }
+        public Visibility LeftButtonVisibility { get; set; }
+        public Visibility ArriveButtonVisibility { get; set; }
 
         public KppShipments(DB.Shipment shipment)
         {
