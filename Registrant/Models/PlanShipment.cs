@@ -11,6 +11,8 @@ namespace Registrant.Models
         public DateTime PlanDateTime { get; set; }
         public string PlanDateTimeString { get; set; }
 
+        public string NumAuto { get; set; } 
+
         public PlanShipment(DB.Shipment shipment)
         {
             IdShipment = shipment.IdShipment;
@@ -26,6 +28,12 @@ namespace Registrant.Models
                 PlanDateTime = shipment.IdTimeNavigation.DateTimePlanRegist.Value;
                 PlanDateTimeString = PlanDateTime.ToString(CultureInfo.CurrentCulture);
             }
+
+            if (shipment.IdDriverNavigation.AutoNumber != null)
+            {
+                NumAuto = shipment.IdDriverNavigation.AutoNumber;
+            }
+
         }
     }
 }

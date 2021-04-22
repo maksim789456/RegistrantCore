@@ -13,8 +13,9 @@ namespace Registrant.Models
         public string PlanDateFactString { get; set; }
         public string TextStatus { get; set; }
 
-        public Visibility LeftButtonVisibility { get; set; }
-        public Visibility ArriveButtonVisibility { get; set; }
+        public string NumAuto { get; set; }
+        public string btn_left { get; set; }
+        public string btn_arrive { get; set; }
 
         public KppShipments(DB.Shipment shipment)
         {
@@ -25,6 +26,11 @@ namespace Registrant.Models
             {
                 PlanDateFact = shipment.IdTimeNavigation.DateTimeFactRegist.Value;
                 PlanDateFactString = PlanDateFact.ToString(CultureInfo.GetCultureInfo("ru-ru"));
+            }
+
+            if (shipment.IdDriverNavigation.AutoNumber != null)
+            {
+                NumAuto = shipment.IdDriverNavigation.AutoNumber;
             }
 
             if (shipment.IdTimeNavigation?.DateTimeLeft != null)
