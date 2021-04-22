@@ -4,18 +4,19 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using Registrant.DB;
+using Registrant.Models;
 
 namespace Registrant.Pages
 {
     public partial class PageDrivers
     {
-        Controllers.DriversController controller;
+        private Controllers.DriversController _controller;
 
         public PageDrivers()
         {
             InitializeComponent();
-            controller = new Controllers.DriversController();
-            DataGrid_Drivers.ItemsSource = controller.GetDrivers();
+            _controller = new Controllers.DriversController();
+            DataGrid_Drivers.ItemsSource = _controller.GetDrivers();
 
             if (App.LevelAccess == "reader")
             {
@@ -34,7 +35,7 @@ namespace Registrant.Pages
                 Thread.Sleep(Settings.App.Default.RefreshContent);
                 if (Dispatcher.Invoke(() => tb_search.Text == ""))
                 {
-                    Dispatcher.Invoke(() => DataGrid_Drivers.ItemsSource = controller.GetDrivers());
+                    Dispatcher.Invoke(() => DataGrid_Drivers.ItemsSource = _controller.GetDrivers());
                     Dispatcher.Invoke(() => DataGrid_Drivers.Items.Refresh());
                 }
             }
@@ -50,7 +51,7 @@ namespace Registrant.Pages
             if (tb_search.Text == "")
             {
                 //DataGrid_Drivers.ItemsSource = null;
-                DataGrid_Drivers.ItemsSource = controller.GetDrivers();
+                DataGrid_Drivers.ItemsSource = _controller.GetDrivers();
                 DataGrid_Drivers.Items.Refresh();
             }
         }
@@ -66,39 +67,43 @@ namespace Registrant.Pages
         /// Кнопка добавления водителя
         private void btn_add_Click(object sender, RoutedEventArgs e)
         {
-            if (tb_Family.Text != "")
+            if (tb_Family.Text == "")
             {
-                try
-                {
-                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
-                    {
-                        DB.Driver driver = new DB.Driver();
-                        driver.Family = tb_Family.Text;
-                        driver.Name = tb_name.Text;
-                        driver.Patronymic = tb_patronomyc.Text;
-                        driver.Phone = tb_phone.Text;
-
-                        driver.Attorney = tb_attorney.Text;
-                        driver.Auto = tb_auto.Text;
-                        driver.AutoNumber = tb_autonum.Text;
-                        driver.Passport = tb_passport.Text;
-                        driver.Info = tb_info.Text;
-                        driver.Active = "1";
-                        driver.ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил водителя";
-                        ef.Add(driver);
-                        ef.SaveChanges();
-                        btn_close_Click(sender, e);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
-                }
+                MessageBox.Show("Введите хотя бы фамилию водителя!", "Внимание!", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                return;
             }
-            else
+
+            try
             {
-                MessageBox.Show("Введите хотябы фамилию водителя!", "Внимание!", MessageBoxButton.OK, MessageBoxImage.Error);
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                Driver driver = new Driver
+                {
+                    Family = tb_Family.Text,
+                    Name = tb_name.Text,
+                    Patronymic = tb_patronomyc.Text,
+                    Phone = tb_phone.Text,
+                    Attorney = tb_attorney.Text,
+                    Auto = tb_auto.Text,
+                    AutoNumber = tb_autonum.Text,
+                    Passport = tb_passport.Text,
+                    Info = tb_info.Text,
+                    Active = "1",
+                    ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил водителя"
+                };
+
+                ef.Add(driver);
+                ef.SaveChanges();
+                btn_close_Click(sender, e);
+            }
+            catch (Exception ex)
+            {
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
+                }
             }
         }
 
@@ -112,39 +117,37 @@ namespace Registrant.Pages
             btn_edit.Visibility = Visibility.Visible;
             btn_add.Visibility = Visibility.Collapsed;
             btn_delete.Visibility = Visibility.Visible;
-            if (current != null)
+            if (current == null) return;
+            try
             {
-                try
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                var driver = ef.Drivers.FirstOrDefault(x => x.IdDriver == current.IdDriver);
+
+                if (driver != null)
                 {
-                    using RegistrantCoreContext ef = new RegistrantCoreContext();
-                    var driver = ef.Drivers.FirstOrDefault(x => x.IdDriver == current.IdDriver);
+                    text_namedriver.Text = driver.Family + " " + driver.Name + " " + driver.Patronymic;
 
-                    if (driver != null)
-                    {
-                        text_namedriver.Text = driver.Family + " " + driver.Name + " " + driver.Patronymic;
+                    tb_id.Text = driver.IdDriver.ToString();
+                    tb_Family.Text = driver.Family;
+                    tb_name.Text = driver.Name;
+                    tb_patronomyc.Text = driver.Patronymic;
+                    tb_phone.Text = driver.Phone;
 
-                        tb_id.Text = driver.IdDriver.ToString();
-                        tb_Family.Text = driver.Family;
-                        tb_name.Text = driver.Name;
-                        tb_patronomyc.Text = driver.Patronymic;
-                        tb_phone.Text = driver.Phone;
-
-                        tb_attorney.Text = driver.Attorney;
-                        tb_auto.Text = driver.Auto;
-                        tb_autonum.Text = driver.AutoNumber;
-                        tb_passport.Text = driver.Passport;
-                        tb_info.Text = driver.Info;
-                    }
-                    ContentAddEdit.ShowAsync();
+                    tb_attorney.Text = driver.Attorney;
+                    tb_auto.Text = driver.Auto;
+                    tb_autonum.Text = driver.AutoNumber;
+                    tb_passport.Text = driver.Passport;
+                    tb_info.Text = driver.Info;
                 }
-                catch (Exception ex)
+                ContentAddEdit.ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                if (mainWindow != null)
                 {
-                    MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
-                    if (mainWindow != null)
-                    {
-                        mainWindow.ContentErrorText.ShowAsync();
-                        mainWindow.text_debuger.Text = ex.ToString();
-                    }
+                    mainWindow.ContentErrorText.ShowAsync();
+                    mainWindow.text_debuger.Text = ex.ToString();
                 }
             }
         }
@@ -187,11 +190,9 @@ namespace Registrant.Pages
 
             try
             {
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
-                {
-                    btn_add.Visibility = Visibility.Visible;
-                    btn_delete.Visibility = Visibility.Collapsed;
-                }
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                btn_add.Visibility = Visibility.Visible;
+                btn_delete.Visibility = Visibility.Collapsed;
             }
             catch (Exception ex)
             {
@@ -207,16 +208,16 @@ namespace Registrant.Pages
         /// Очистка
         void ClearTextbox()
         {
-            tb_id.Text = null;
-            tb_Family.Text = null;
-            tb_name.Text = null;
-            tb_patronomyc.Text = null;
-            tb_phone.Text = null;
-            tb_attorney.Text = null;
-            tb_auto.Text = null;
-            tb_autonum.Text = null;
-            tb_passport.Text = null;
-            tb_info.Text = null;
+            tb_id.Text = "";
+            tb_Family.Text = "";
+            tb_name.Text = "";
+            tb_patronomyc.Text = "";
+            tb_phone.Text = "";
+            tb_attorney.Text = "";
+            tb_auto.Text = "";
+            tb_autonum.Text = "";
+            tb_passport.Text = "";
+            tb_info.Text = "";
         }
 
         /// Непосредственное редактирование
@@ -274,7 +275,7 @@ namespace Registrant.Pages
         private void btn_info_Click(object sender, RoutedEventArgs e)
         {
             var bt = e.OriginalSource as Button;
-            var current = bt?.DataContext as Models.Drivers;
+            var current = bt?.DataContext as Drivers;
 
             if (current != null)
             {
@@ -310,10 +311,10 @@ namespace Registrant.Pages
                 {
                     DataGrid_Drivers.ItemsSource = null;
 
-                    var temp = controller.GetDriversAll();
+                    var allDrivers = _controller.GetDriversAll();
 
-                    var data = temp.Where(t => t.Fio.ToUpper().StartsWith(tb_search.Text.ToUpper())).ToList();
-                    var sDop = temp.Where(t => t.Fio.ToUpper().Contains(tb_search.Text.ToUpper())).ToList();
+                    var data = allDrivers.Where(t => t.Fio.ToUpper().StartsWith(tb_search.Text.ToUpper())).ToList();
+                    var sDop = allDrivers.Where(t => t.Fio.ToUpper().Contains(tb_search.Text.ToUpper())).ToList();
                     data.AddRange(sDop);
                     var noDupes = data.Distinct().ToList();
                     DataGrid_Drivers.ItemsSource = noDupes;

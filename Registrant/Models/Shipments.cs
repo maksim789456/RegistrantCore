@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Windows;
+using System.Globalization;
 
 namespace Registrant.Models
 {
@@ -81,25 +81,25 @@ namespace Registrant.Models
 
             if (shipment.IdTimeNavigation.DateTimeLeft != null)
             {
-                TextStatus = "Покинул склад (" + DateTimeLeft.ToString() + ")";
+                TextStatus = "Покинул склад (" + DateTimeLeft.ToString(CultureInfo.CurrentCulture) + ")";
             }
             else if (shipment.IdTimeNavigation?.DateTimeLeft == null && shipment.IdTimeNavigation?.DateTimeEndLoad != null)
             {
-                TextStatus = "Отгрузка завершена (" + DateTimeEndLoad.ToString() + ")";
+                TextStatus = "Отгрузка завершена (" + DateTimeEndLoad.ToString(CultureInfo.CurrentCulture) + ")";
             }
             else if (shipment.IdTimeNavigation?.DateTimeEndLoad == null && shipment.IdTimeNavigation?.DateTimeLoad != null)
             {
-                TextStatus = "Отгрузка (" + DateTimeLoad.ToString() + ")";
+                TextStatus = "Отгрузка (" + DateTimeLoad.ToString(CultureInfo.CurrentCulture) + ")";
             }
             else if (shipment.IdTimeNavigation?.DateTimeLoad == null && shipment.IdTimeNavigation?.DateTimeArrive != null)
             {
-                TextStatus = "На территории склада (" + DateTimeArrive.ToString() + ")";
+                TextStatus = "На территории склада (" + DateTimeArrive.ToString(CultureInfo.CurrentCulture) + ")";
                 Color = "#FFF9C38B";
 
             }
             else if (shipment.IdTimeNavigation?.DateTimeArrive == null && shipment.IdTimeNavigation?.DateTimeFactRegist != null)
             {
-                TextStatus = "Зарегистрирован (" + DateTimeFactRegist.ToString() + ")";
+                TextStatus = "Зарегистрирован (" + DateTimeFactRegist.ToString(CultureInfo.CurrentCulture) + ")";
                 Color = "#FFFFEEDC";
 
             }
@@ -109,7 +109,7 @@ namespace Registrant.Models
             }
             else if (shipment.IdTimeNavigation?.DateTimePlanRegist == null && shipment.IdTimeNavigation?.DateTimeFactRegist != null)
             {
-                TextStatus =  "Зарегистрирован (" + DateTimeFactRegist.ToString() + ")";
+                TextStatus =  "Зарегистрирован (" + DateTimeFactRegist.ToString(CultureInfo.CurrentCulture) + ")";
                 Color = "#FFFFEEDC";
             }
 

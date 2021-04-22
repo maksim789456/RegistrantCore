@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Registrant.Models;
 using System.Windows;
+using Registrant.DB;
 
 namespace Registrant.Controllers
 {
@@ -22,18 +23,18 @@ namespace Registrant.Controllers
 
             try
             {
-                using DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext();
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
                 //var temp = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date && x.IdTimeNavigation.DateTimeFactRegist.Value == null);
                 var shipments = ef.Shipments.Where(x =>
                     (x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date ||
                      x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date.Date)
                     && x.IdTimeNavigation.DateTimeLeft == null
                     && x.IdTimeNavigation.DateTimeFactRegist != null
-                    && x.Active != "0");
+                    && x.Active != "0")
+                    .OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
 
                 foreach (var item in shipments)
                 {
-                    var temp = ef.Shipments.Where(x => ((x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date) && x.IdTimeNavigation.DateTimeLeft == null && x.IdTimeNavigation.DateTimeFactRegist != null && x.Active != "0")).OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
                     KppShipments shipment = new KppShipments(item);
                     DriverShipments.Add(shipment);
                 }

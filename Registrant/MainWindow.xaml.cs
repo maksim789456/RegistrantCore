@@ -159,7 +159,7 @@ namespace Registrant
                     TestConnect();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Dispatcher.Invoke(() => ContentCheckingUpdate.Hide());
                 TestConnect();

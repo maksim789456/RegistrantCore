@@ -48,13 +48,12 @@ namespace Registrant.Controllers
             try
             {
                 using RegistrantCoreContext ef = new RegistrantCoreContext();
-                var drivers = ef.Drivers.Where(x => x.Active != "0" | x.IdDriver == id).OrderByDescending(x => x.Family);
+                var drivers = ef.Drivers.Where(x => x.Active != "0" | x.IdDriver == id).OrderBy(x => x.Family);
 
                 foreach (var item in drivers)
                 {
                     Drivers driver = new Drivers(item);
                     Driver.Add(driver);
-                    var temp = ef.Drivers.Where(x => x.Active != "0" | x.IdDriver == id).OrderBy(x => x.Family);
                 }
             }
             catch (Exception ex)
@@ -76,13 +75,12 @@ namespace Registrant.Controllers
             try
             {
                 using RegistrantCoreContext ef = new RegistrantCoreContext();
-                var drivers = ef.Drivers.Where(x => x.Active != "0").OrderByDescending(x => x.Family);
+                var drivers = ef.Drivers.Where(x => x.Active != "0").OrderBy(x => x.Family);
 
                 foreach (var item in drivers)
                 {
                     Drivers driver = new Drivers(item);
                     Driver.Add(driver);
-                    var temp = ef.Drivers.Where(x => x.Active != "0").OrderBy(x => x.Family);
                 }
             }
             catch (Exception ex)

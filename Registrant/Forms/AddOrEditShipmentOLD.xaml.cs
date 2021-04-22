@@ -1,21 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Registrant.DB;
+using Registrant.Models;
 
 namespace Registrant.Forms
 {
-    /// <summary>
-    /// Логика взаимодействия для AddOrEditShipment.xaml
-    /// </summary>
     public partial class AddOrEditShipmentOLD
     {
         /// Новая отгрузка
@@ -32,21 +23,20 @@ namespace Registrant.Forms
         /// Выбор водителя
         private void cb_drivers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var test = cb_drivers as ComboBox;
-            var current = test.SelectedItem as Models.Drivers;
+            var current = cb_drivers.SelectedItem as Drivers;
 
             if (current != null)
             {
                 try
                 {
-                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                    using RegistrantCoreContext ef = new RegistrantCoreContext();
+                    var driver = ef.Drivers.FirstOrDefault(x => x.IdDriver == current.IdDriver);
+                    
+                    if (driver != null)
                     {
-                        var temp = ef.Drivers.FirstOrDefault(x => x.IdDriver == current.IdDriver);
-
-                        //tb_contragent.Text = temp.IdContragentNavigation?.Name;
-                        tb_phone.Text = temp.Phone;
-                        tb_autonum.Text = temp.AutoNumber;
-                        tb_attorney.Text = temp.Attorney;
+                        tb_phone.Text = driver.Phone;
+                        tb_autonum.Text = driver.AutoNumber;
+                        tb_attorney.Text = driver.Attorney;
                     }
                 }
                 catch (Exception ex)
@@ -56,34 +46,18 @@ namespace Registrant.Forms
             }
             else
             {
-                tb_contragent.Text = null;
-                tb_phone.Text = null;
-                tb_autonum.Text = null;
+                tb_contragent.Text = "";
+                tb_phone.Text = "";
+                tb_autonum.Text = "";
             }
-            
         }
 
         /// Подгрузка водителей
         void LoadDriversBox()
         {
-            try
-            {
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
-                {
-                    Controllers.DriversController driver = new Controllers.DriversController();
-
-                    cb_drivers.ItemsSource = driver.GetDriversCurrent();
-
-                }
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
+            Controllers.DriversController driver = new Controllers.DriversController();
+            cb_drivers.ItemsSource = driver.GetDriversCurrent();
         }
-
-
 
         /// Редактирование отгрузок
         public AddOrEditShipmentOLD(int id)
@@ -93,41 +67,42 @@ namespace Registrant.Forms
             btn_add.Visibility = Visibility.Collapsed;
             idcont.Text = id.ToString();
 
-            if (App.LevelAccess == "shipment")
+            switch (App.LevelAccess)
             {
-                dt_load.IsEnabled = false;
-                dt_endload.IsEnabled = false;
-                tb_CountPodons.IsEnabled = false;
-                tb_size.IsEnabled = false;
-                tb_nomencluture.IsEnabled = false;
-                tb_Destination.IsEnabled = false;
-                tb_typeload.IsEnabled = false;
-                tb_descript.IsEnabled = false;
-            }
-            else if (App.LevelAccess == "warehouse")
-            {
-                dt_plan.IsEnabled = false;
-                dt_fact.IsEnabled = false;
-                dt_arrive.IsEnabled = false;
-                dt_left.IsEnabled = false;
+                case "shipment":
+                    dt_load.IsEnabled = false;
+                    dt_endload.IsEnabled = false;
+                    tb_CountPodons.IsEnabled = false;
+                    tb_size.IsEnabled = false;
+                    tb_nomencluture.IsEnabled = false;
+                    tb_Destination.IsEnabled = false;
+                    tb_typeload.IsEnabled = false;
+                    tb_descript.IsEnabled = false;
+                    break;
+                case "warehouse":
+                    dt_plan.IsEnabled = false;
+                    dt_fact.IsEnabled = false;
+                    dt_arrive.IsEnabled = false;
+                    dt_left.IsEnabled = false;
 
-                tb_numrealese.IsEnabled = false;
-                tb_packetdoc.IsEnabled = false;
-                tb_tochkaload.IsEnabled = false;
-            }
-            else if (App.LevelAccess == "admin")
-            {
+                    tb_numrealese.IsEnabled = false;
+                    tb_packetdoc.IsEnabled = false;
+                    tb_tochkaload.IsEnabled = false;
+                    break;
+                case "admin":
+                    break;
             }
 
             try
             {
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                var temp = ef.Shipments.FirstOrDefault(x => x.IdShipment == id);
+
+                Controllers.DriversController driver = new Controllers.DriversController();
+
+                if (temp != null)
                 {
-                    var temp = ef.Shipments.FirstOrDefault(x => x.IdShipment == id);
-
-                    Controllers.DriversController driver = new Controllers.DriversController();
-
-                    cb_drivers.ItemsSource = driver.GetDriversCurrent((int)temp.IdDriver);
+                    cb_drivers.ItemsSource = driver.GetDriversCurrent(temp.IdDriver ?? -1);
                     cb_drivers.SelectedItem = driver.Driver.FirstOrDefault(x => x.IdDriver == temp.IdDriver);
 
                     //ЗАПРЕТ НА РЕДАКТИРОВАНИЕ ЕСЛИ НАЧАЛАСЬ ЗАГРУЗКА
@@ -160,7 +135,10 @@ namespace Registrant.Forms
                     tb_storekeeper.Text = temp.StoreKeeper;
                 }
             }
-            catch (Exception ex) { MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error); }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
 
             if (dt_plan.Value != null)
             {
@@ -173,7 +151,6 @@ namespace Registrant.Forms
         }
 
         /// Кнопка редактировать
-
         private void btn_edit_Click(object sender, RoutedEventArgs e)
         {
             if (App.LevelAccess == "shipment")

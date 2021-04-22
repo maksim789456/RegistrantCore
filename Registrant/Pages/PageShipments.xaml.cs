@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using Registrant.Controllers;
 using Registrant.DB;
 using Registrant.Models;
 
@@ -10,12 +11,12 @@ namespace Registrant.Pages
 {
     public partial class PageShipments
     {
-        Controllers.ShipmentController controller;
+        private ShipmentController _shipmentController;
 
         public PageShipments()
         {
             InitializeComponent();
-            controller = new Controllers.ShipmentController();
+            _shipmentController = new ShipmentController();
             DatePicker.SelectedDate = DateTime.Now;
 
             Thread thread = new Thread(RefreshThread);
@@ -34,29 +35,28 @@ namespace Registrant.Pages
         {
             while (true)
             {
-                
                 if (Dispatcher.Invoke(() => string.IsNullOrWhiteSpace(tb_search.Text)))
                 {
                     if (Dispatcher.Invoke(() => DatePicker.SelectedDate != null))
                     {
                         if (Dispatcher.Invoke(() => cb_sort.SelectedIndex == 0))
                         {
-                            Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = controller.GetShipments(DatePicker.SelectedDate ?? default));
+                            Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = _shipmentController.GetShipments(DatePicker.SelectedDate ?? default));
                             Dispatcher.Invoke(() => DataGrid_Shipments.Items.Refresh());
                         }
                         else if (Dispatcher.Invoke(() => cb_sort.SelectedIndex == 1))
                         {
-                            Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = controller.GetShipmentsFactReg(DatePicker.SelectedDate ?? default));
+                            Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = _shipmentController.GetShipmentsFactReg(DatePicker.SelectedDate ?? default));
                             Dispatcher.Invoke(() => DataGrid_Shipments.Items.Refresh());
                         }
                         else if (Dispatcher.Invoke(() => cb_sort.SelectedIndex == 2))
                         {
-                            Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = controller.GetShipmentsArrive(DatePicker.SelectedDate ?? default));
+                            Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = _shipmentController.GetShipmentsArrive(DatePicker.SelectedDate ?? default));
                             Dispatcher.Invoke(() => DataGrid_Shipments.Items.Refresh());
                         }
                         else if (Dispatcher.Invoke(() => cb_sort.SelectedIndex == 3))
                         {
-                            Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = controller.GetShipmentsLeft(DatePicker.SelectedDate ?? default));
+                            Dispatcher.Invoke(() => DataGrid_Shipments.ItemsSource = _shipmentController.GetShipmentsLeft(DatePicker.SelectedDate ?? default));
                             Dispatcher.Invoke(() => DataGrid_Shipments.Items.Refresh());
                         }
                     }
@@ -76,22 +76,18 @@ namespace Registrant.Pages
 
         private void btn_refresh_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(tb_search.Text)) return;
+            if (DatePicker.SelectedDate == null) return;
             
-            if (!string.IsNullOrWhiteSpace(tb_search.Text))
+            DataGrid_Shipments.ItemsSource = null;
+            DataGrid_Shipments.ItemsSource = cb_sort.SelectedIndex switch
             {
-                if (DatePicker.SelectedDate != null)
-                {
-                    DataGrid_Shipments.ItemsSource = null;
-                    DataGrid_Shipments.ItemsSource = cb_sort.SelectedIndex switch
-                    {
-                        0 => controller.GetShipments(DatePicker.SelectedDate.Value),
-                        1 => controller.GetShipmentsFactReg(DatePicker.SelectedDate.Value),
-                        2 => controller.GetShipmentsArrive(DatePicker.SelectedDate.Value),
-                        3 => controller.GetShipmentsLeft(DatePicker.SelectedDate.Value),
-                        _ => controller.GetShipments(DatePicker.SelectedDate.Value)
-                    };
-                }
-            }
+                0 => _shipmentController.GetShipments(DatePicker.SelectedDate.Value),
+                1 => _shipmentController.GetShipmentsFactReg(DatePicker.SelectedDate.Value),
+                2 => _shipmentController.GetShipmentsArrive(DatePicker.SelectedDate.Value),
+                3 => _shipmentController.GetShipmentsLeft(DatePicker.SelectedDate.Value),
+                _ => _shipmentController.GetShipments(DatePicker.SelectedDate.Value)
+            };
         }
 
         private void cb_sort_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -111,13 +107,14 @@ namespace Registrant.Pages
                 {
                     DataGrid_Shipments.ItemsSource = null;
 
-                    var temp = controller.GetShipmentsAll();
-                    var data = temp.Where(t => t.Fio.ToUpper().StartsWith(tb_search.Text.ToUpper())).ToList();
-                    var sDop = temp.Where(t => t.Fio.ToUpper().Contains(tb_search.Text.ToUpper())).ToList();
+                    var allShipments = _shipmentController.GetShipmentsAll();
+                    var data = allShipments.Where(t => t.Fio.ToUpper().StartsWith(tb_search.Text.ToUpper())).ToList();
+                    var sDop = allShipments.Where(t => t.Fio.ToUpper().Contains(tb_search.Text.ToUpper())).ToList();
                     data.AddRange(sDop);
                     var noDupes = data.Distinct().ToList();
                     DataGrid_Shipments.ItemsSource = noDupes;
 
+                    //TODO: WTF?
                     if (noDupes.Count == 0)
                     {
                         //Ничекго не нашел
@@ -129,8 +126,12 @@ namespace Registrant.Pages
                 }
                 catch (Exception ex)
                 {
-                    ((MainWindow)Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                    ((MainWindow)Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                    MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                    if (mainWindow != null)
+                    {
+                        mainWindow.ContentErrorText.ShowAsync();
+                        mainWindow.text_debuger.Text = ex.ToString();
+                    }
                 }
             }
         }
@@ -163,8 +164,12 @@ namespace Registrant.Pages
                     }
                     catch (Exception ex)
                     {
-                        ((MainWindow)Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                        ((MainWindow)Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                        MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                        if (mainWindow != null)
+                        {
+                            mainWindow.ContentErrorText.ShowAsync();
+                            mainWindow.text_debuger.Text = ex.ToString();
+                        };
                     }
                 }
             }
@@ -194,8 +199,12 @@ namespace Registrant.Pages
                     }
                     catch (Exception ex)
                     {
-                        ((MainWindow)Application.Current.MainWindow).ContentErrorText.ShowAsync();
-                        ((MainWindow)Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+                        MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+                        if (mainWindow != null)
+                        {
+                            mainWindow.ContentErrorText.ShowAsync();
+                            mainWindow.text_debuger.Text = ex.ToString();
+                        }
                     }
                 }
             }
@@ -207,7 +216,7 @@ namespace Registrant.Pages
         {
             var bt = e.OriginalSource as Button;
             var current = bt?.DataContext as Shipments;
-            if (current !=null)
+            if (current != null)
             {
                 Forms.AddOrEditShipment addOr = new Forms.AddOrEditShipment(current.IdShipment);
                 addOr.ShowDialog();
@@ -217,33 +226,37 @@ namespace Registrant.Pages
 
         private void btn_print_Click(object sender, RoutedEventArgs e)
         {
-            if (App.LevelAccess == "shipment")
+            switch (App.LevelAccess)
             {
-                Forms.PrintShipments print = new Forms.PrintShipments();
-                print.ShowDialog();
-            }
-            else if (App.LevelAccess == "warehouse")
-            {
-                Forms.PrintWarehouse print = new Forms.PrintWarehouse();
-                print.ShowDialog();
-            }
-            else
-            {
-                MessageBoxResult? result = MessageBox.Show("Открыть окно вид для сбыта?", "Внимание",
-                    MessageBoxButton.YesNo, MessageBoxImage.Asterisk);
-                if (result == MessageBoxResult.Yes)
+                case "shipment":
                 {
                     Forms.PrintShipments print = new Forms.PrintShipments();
                     print.ShowDialog();
+                    break;
                 }
-                else
+                case "warehouse":
                 {
                     Forms.PrintWarehouse print = new Forms.PrintWarehouse();
                     print.ShowDialog();
+                    break;
+                }
+                default:
+                {
+                    MessageBoxResult? result = MessageBox.Show("Открыть окно вид для сбыта?", "Внимание",
+                        MessageBoxButton.YesNo, MessageBoxImage.Asterisk);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        Forms.PrintShipments print = new Forms.PrintShipments();
+                        print.ShowDialog();
+                    }
+                    else
+                    {
+                        Forms.PrintWarehouse print = new Forms.PrintWarehouse();
+                        print.ShowDialog();
+                    }
+                    break;
                 }
             }
         }
-
-
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace Registrant.Models
 {
@@ -35,10 +36,10 @@ namespace Registrant.Models
             if (shipment.IdDriverNavigation != null)
                 FioTelephone = $"{shipment.IdDriverNavigation.Family} {shipment.IdDriverNavigation.Name} {shipment.IdDriverNavigation.Patronymic} {shipment.IdDriverNavigation.Phone}";
 
-            DatePlan = shipment.IdTimeNavigation.DateTimePlanRegist.HasValue ? shipment.IdTimeNavigation.DateTimePlanRegist.Value.ToString() : "";
-            DateArrive = shipment.IdTimeNavigation.DateTimeArrive.HasValue ? shipment.IdTimeNavigation.DateTimeArrive.Value.ToString() : "";
-            DateLoad = shipment.IdTimeNavigation.DateTimeLoad.HasValue ? shipment.IdTimeNavigation.DateTimeLoad.Value.ToString() : "";
-            DateEndLoad = shipment.IdTimeNavigation.DateTimeEndLoad.HasValue ? shipment.IdTimeNavigation.DateTimeEndLoad.Value.ToString() : "";
+            DatePlan = shipment.IdTimeNavigation.DateTimePlanRegist.HasValue ? shipment.IdTimeNavigation.DateTimePlanRegist.Value.ToString(CultureInfo.CurrentCulture) : "";
+            DateArrive = shipment.IdTimeNavigation.DateTimeArrive.HasValue ? shipment.IdTimeNavigation.DateTimeArrive.Value.ToString(CultureInfo.CurrentCulture) : "";
+            DateLoad = shipment.IdTimeNavigation.DateTimeLoad.HasValue ? shipment.IdTimeNavigation.DateTimeLoad.Value.ToString(CultureInfo.CurrentCulture) : "";
+            DateEndLoad = shipment.IdTimeNavigation.DateTimeEndLoad.HasValue ? shipment.IdTimeNavigation.DateTimeEndLoad.Value.ToString(CultureInfo.CurrentCulture) : "";
 
             Contragent = shipment.IdContragentNavigation?.Name;
             Attorney = shipment.IdDriverNavigation?.Attorney;

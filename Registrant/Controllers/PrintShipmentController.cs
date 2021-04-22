@@ -23,10 +23,11 @@ namespace Registrant.Controllers
             {
                 using DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext();
                 var shipments =
-                    ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date);
+                    ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date || 
+                                            x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date)
+                        .OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
                 foreach (var item in shipments)
                 {
-                    var temp = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date).OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
                     PrintShipments shipment = new PrintShipments(item);
                     PlanShipments.Add(shipment);
                 }
@@ -51,10 +52,11 @@ namespace Registrant.Controllers
             {
                 using DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext();
                 var shipments =
-                    ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Month == date.Month);
+                    ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Month == date.Month 
+                                            || x.IdTimeNavigation.DateTimeFactRegist.Value.Month == date.Month)
+                        .OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
                 foreach (var item in shipments)
                 {
-                    var temp = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Month == date.Month || x.IdTimeNavigation.DateTimeFactRegist.Value.Month == date.Month).OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
                     PrintShipments shipment = new PrintShipments(item);
                     PlanShipments.Add(shipment);
                 }

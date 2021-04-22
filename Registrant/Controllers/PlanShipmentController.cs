@@ -26,10 +26,10 @@ namespace Registrant.Controllers
                 using DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext();
                 var shipments = ef.Shipments.Where(x =>
                     x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date.Date
-                    && x.IdTimeNavigation.DateTimeFactRegist.Value == null);
+                    && x.IdTimeNavigation.DateTimeFactRegist.Value == null)
+                    .OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
                 foreach (var item in shipments)
                 {
-                    var temp = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date && x.IdTimeNavigation.DateTimeFactRegist.Value == null).OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
                     PlanShipment shipment = new PlanShipment(item);
                     PlanShipments.Add(shipment);
                 }
