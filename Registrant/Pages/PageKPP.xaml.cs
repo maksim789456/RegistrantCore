@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using MessageBox = ModernWpf.MessageBox;
 using Registrant.Models;
 
 namespace Registrant.Pages

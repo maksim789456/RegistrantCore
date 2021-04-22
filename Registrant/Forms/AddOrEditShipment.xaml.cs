@@ -3,7 +3,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Registrant.DB;
-using Registrant.Models;
 
 namespace Registrant.Forms
 {
@@ -21,182 +20,168 @@ namespace Registrant.Forms
         }
 
         //Разбив фио
-        static (string family, string name, string patronomyc) SplitNames(string FullName)
+        static (string family, string name, string patronomyc) SplitNames(string fullName)
         {
-            var partsName = FullName.Split(' ');
+            var partsName = fullName.Split(' ');
             return (partsName[0], partsName[1], partsName[2]);
         }
 
         /// Добавить соответственно
         private void btn_add_Click(object sender, RoutedEventArgs e)
         {
-            if (cb_drivers.Text != "")
+            if (cb_drivers.Text == "")
             {
-                if (cb_contragent.Text != "")
+                MessageBox.Show("Водитель не выбран", "Внимание!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            
+            if (cb_contragent.Text == "")
+            {
+                MessageBox.Show("Контрагент не выбран", "Внимание!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            
+            if (dt_plan.Value == null)
+            {
+                MessageBox.Show("Дата плановой загрузки не заполнена!", "Внимание!", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                return;
+            }
+
+            try
+            {
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                Shipment shipment = new Shipment();
+
+                if (cb_drivers.SelectedItem != null)
                 {
-                    if (dt_plan.Value != null)
-                    {
-                        try
-                        {
-                            using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
-                            {
-                                DB.Shipment shipment = new DB.Shipment();
-
-                                if (cb_drivers.SelectedItem != null)
-                                {
-                                    var test = cb_drivers as ComboBox;
-                                    var current = test.SelectedItem as Models.Drivers;
-                                    shipment.IdDriver = current.IdDriver;
-                                }
-                                else
-                                {
-                                    //Если водителя нет в списках
-                                    DB.Driver driver = new DB.Driver();
-                                    shipment.IdDriverNavigation = driver;
-                                    var temp = SplitNames(cb_drivers.Text + " ");
-
-                                    driver.Name = temp.name.Replace(" ", "");
-                                    driver.Family = temp.family.Replace(" ", "");
-                                    driver.Patronymic = temp.patronomyc.Replace(" ", "");
-                                    driver.AutoNumber = tb_autonum.Text;
-                                    driver.Attorney = tb_attorney.Text;
-                                    driver.Phone = tb_phone.Text;
-                                    driver.Active = "1";
-                                    driver.ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил водителя";
-                                }
-
-                                if (cb_contragent.SelectedItem != null)
-                                {
-                                    var test = cb_contragent as ComboBox;
-                                    var current = test.SelectedItem as DB.Contragent;
-                                    shipment.IdContragent = current.IdContragent;
-                                }
-                                else
-                                {
-                                    DB.Contragent contragent = new DB.Contragent();
-                                    contragent.Name = cb_contragent.Text;
-                                    contragent.Active = "1";
-                                    contragent.ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил контрагента";
-                                    shipment.IdContragentNavigation = contragent;
-                                }
-
-
-                                DB.Time time = new DB.Time();
-                                shipment.IdTimeNavigation = time;
-
-                                if (dt_plan.Value != null)
-                                {
-                                    time.DateTimePlanRegist = dt_plan.Value;
-                                }
-                                if (dt_fact.Value != null)
-                                {
-                                    time.DateTimeFactRegist = dt_fact.Value;
-                                }
-                                if (dt_arrive.Value != null)
-                                {
-                                    time.DateTimeArrive = dt_arrive.Value;
-                                }
-                                if (dt_load.Value != null)
-                                {
-                                    time.DateTimeLoad = dt_load.Value;
-                                }
-                                if (dt_endload.Value != null)
-                                {
-                                    time.DateTimeEndLoad = dt_endload.Value;
-                                }
-                                if (dt_left.Value != null)
-                                {
-                                    time.DateTimeLeft = dt_left.Value;
-                                }
-
-                                if (tb_numrealese.Text != null)
-                                {
-                                    shipment.NumRealese = tb_numrealese.Text;
-                                }
-                                if (tb_packetdoc.Text != null)
-                                {
-                                    shipment.PacketDocuments = tb_packetdoc.Text;
-                                }
-                                if (tb_tochkaload.Text != null)
-                                {
-                                    shipment.TochkaLoad = tb_tochkaload.Text;
-                                }
-                                if (tb_CountPodons.Text != null)
-                                {
-                                    shipment.CountPodons = tb_CountPodons.Text;
-                                }
-                                if (tb_nomencluture.Text != null)
-                                {
-                                    shipment.Nomenclature = tb_nomencluture.Text;
-                                }
-                                if (tb_size.Text != null)
-                                {
-                                    shipment.Size = tb_size.Text;
-                                }
-                                if (tb_Destination.Text != null)
-                                {
-                                    shipment.Destination = tb_Destination.Text;
-                                }
-                                if (tb_typeload.Text != null)
-                                {
-                                    shipment.TypeLoad = tb_typeload.Text;
-                                }
-                                if (tb_descript.Text != null)
-                                {
-                                    shipment.Description = tb_descript.Text;
-                                }
-                                if (tb_storekeeper.Text != null)
-                                {
-                                    shipment.StoreKeeper = tb_storekeeper.Text;
-                                }
-
-                                shipment.Active = "1";
-                                shipment.ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил отгрузку";
-
-
-                                ef.Add(shipment);
-                                ef.SaveChanges();
-                                Close();
-
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("Дата плановой загрузки не заполнена!", "Внимание!", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                    var current = cb_drivers.SelectedItem as Models.Drivers;
+                    shipment.IdDriver = current?.IdDriver;
                 }
                 else
                 {
-                    MessageBox.Show("Контрагент не выбран", "Внимание!", MessageBoxButton.OK, MessageBoxImage.Error);
+                    //Если водителя нет в списках
+                    var splitNames = SplitNames(cb_drivers.Text + " ");
+                    Driver driver = new Driver
+                    {
+                        Name = splitNames.name.Replace(" ", ""),
+                        Family = splitNames.family.Replace(" ", ""),
+                        Patronymic = splitNames.patronomyc.Replace(" ", ""),
+                        AutoNumber = tb_autonum.Text,
+                        Attorney = tb_attorney.Text,
+                        Phone = tb_phone.Text,
+                        Active = "1",
+                        ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил водителя"
+                    };
+
+                    shipment.IdDriverNavigation = driver;
                 }
+
+                if (cb_contragent.SelectedItem != null)
+                {
+                    var current = cb_contragent.SelectedItem as Contragent;
+                    shipment.IdContragent = current?.IdContragent;
+                }
+                else
+                {
+                    Contragent contragent = new Contragent
+                    {
+                        Name = cb_contragent.Text,
+                        Active = "1",
+                        ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил контрагента"
+                    };
+                    shipment.IdContragentNavigation = contragent;
+                }
+                
+                Time time = new Time
+                {
+                    //При добавлении можно сохранять прям DateTime? не боясь за null-ы
+                    DateTimePlanRegist = dt_plan.Value,
+                    DateTimeFactRegist = dt_fact.Value,
+                    DateTimeArrive = dt_arrive.Value,
+                    DateTimeLoad = dt_load.Value,
+                    DateTimeEndLoad = dt_endload.Value,
+                    DateTimeLeft = dt_left.Value
+                };
+
+                shipment.IdTimeNavigation = time;
+
+                if (string.IsNullOrWhiteSpace(tb_numrealese.Text))
+                {
+                    shipment.NumRealese = tb_numrealese.Text;
+                }
+
+                if (string.IsNullOrWhiteSpace(tb_packetdoc.Text))
+                {
+                    shipment.PacketDocuments = tb_packetdoc.Text;
+                }
+
+                if (string.IsNullOrWhiteSpace(tb_tochkaload.Text))
+                {
+                    shipment.TochkaLoad = tb_tochkaload.Text;
+                }
+
+                if (string.IsNullOrWhiteSpace(tb_CountPodons.Text))
+                {
+                    shipment.CountPodons = tb_CountPodons.Text;
+                }
+
+                if (string.IsNullOrWhiteSpace(tb_nomencluture.Text))
+                {
+                    shipment.Nomenclature = tb_nomencluture.Text;
+                }
+
+                if (string.IsNullOrWhiteSpace(tb_size.Text))
+                {
+                    shipment.Size = tb_size.Text;
+                }
+
+                if (string.IsNullOrWhiteSpace(tb_Destination.Text))
+                {
+                    shipment.Destination = tb_Destination.Text;
+                }
+
+                if (string.IsNullOrWhiteSpace(tb_typeload.Text))
+                {
+                    shipment.TypeLoad = tb_typeload.Text;
+                }
+
+                if (string.IsNullOrWhiteSpace(tb_descript.Text))
+                {
+                    shipment.Description = tb_descript.Text;
+                }
+
+                if (string.IsNullOrWhiteSpace(tb_storekeeper.Text))
+                {
+                    shipment.StoreKeeper = tb_storekeeper.Text;
+                }
+
+                shipment.Active = "1";
+                shipment.ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил отгрузку";
+
+                ef.Add(shipment);
+                ef.SaveChanges();
+                Close();
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Водитель не выбран", "Внимание!", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
         }
 
         /// Выбор водителя
         private void cb_drivers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var current = cb_drivers.SelectedItem as Drivers;
+            var test = cb_drivers as ComboBox;
+            var current = test.SelectedItem as Models.Drivers;
 
             if (current != null)
             {
                 try
                 {
-                    using RegistrantCoreContext ef = new RegistrantCoreContext();
-                    var driver = ef.Drivers.FirstOrDefault(x => x.IdDriver == current.IdDriver);
-                    if (driver != null)
+                    using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                     {
-                        tb_phone.Text = driver.Phone;
-                        tb_autonum.Text = driver.AutoNumber;
-                        tb_attorney.Text = driver.Attorney;
                         var temp = ef.Drivers.FirstOrDefault(x => x.IdDriver == current.IdDriver);
 
                         //tb_contragent.Text = temp.IdContragentNavigation?.Name;
@@ -212,12 +197,11 @@ namespace Registrant.Forms
             }
             else
             {
-                tb_phone.Text = "";
-                tb_autonum.Text = "";
                 //cb_contragent.Text = null;
                 tb_phone.Text = null;
                 tb_autonum.Text = null;
             }
+            
         }
 
         /// Подгрузка водителей
@@ -229,7 +213,7 @@ namespace Registrant.Forms
                 {
                     Controllers.DriversController driver = new Controllers.DriversController();
 
-                    cb_drivers.ItemsSource = driver.GetDriversСurrent();
+                    cb_drivers.ItemsSource = driver.GetDriversCurrent();
                     cb_contragent.ItemsSource = ef.Contragents.Where(x => x.Active != "0").OrderBy(x => x.Name).ToList();
                 }
             }
@@ -240,6 +224,8 @@ namespace Registrant.Forms
             }
         }
 
+
+
         /// Редактирование отгрузок
         public AddOrEditShipment(int id)
         {
@@ -248,7 +234,7 @@ namespace Registrant.Forms
             btn_add.Visibility = Visibility.Collapsed;
             idcont.Text = id.ToString();
 
-            switch (App.LevelAccess)
+            if (App.LevelAccess == "shipment")
             {
                 dt_load.IsEnabled = false;
                 dt_endload.IsEnabled = false;
@@ -279,48 +265,47 @@ namespace Registrant.Forms
             }
             try
             {
-                using RegistrantCoreContext ef = new RegistrantCoreContext();
-                var shipment = ef.Shipments.FirstOrDefault(x => x.IdShipment == id);
+                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                {
+                    var temp = ef.Shipments.FirstOrDefault(x => x.IdShipment == id);
 
                     Controllers.DriversController driver = new Controllers.DriversController();
-                    cb_drivers.ItemsSource = driver.GetDriversСurrent((int)temp.IdDriver);
+                    cb_drivers.ItemsSource = driver.GetDriversCurrent((int)temp.IdDriver);
                     cb_drivers.SelectedItem = driver.Driver.FirstOrDefault(x => x.IdDriver == temp.IdDriver);
 
                     cb_contragent.ItemsSource = ef.Contragents.Where(x => x.Active != "0" || (x.IdContragent == temp.IdContragent)).OrderBy(x => x.Name).ToList();
                     cb_contragent.SelectedItem = ef.Contragents.FirstOrDefault(x => x.IdContragent == temp.IdContragent);
 
-                    dt_plan.Value = shipment.IdTimeNavigation.DateTimePlanRegist;
-                    dt_fact.Value = shipment.IdTimeNavigation.DateTimeFactRegist;
-                    dt_arrive.Value = shipment.IdTimeNavigation.DateTimeArrive;
-                    dt_load.Value = shipment.IdTimeNavigation.DateTimeLoad;
-                    dt_endload.Value = shipment.IdTimeNavigation.DateTimeEndLoad;
-                    dt_left.Value = shipment.IdTimeNavigation.DateTimeLeft;
+                    dt_plan.Value = temp.IdTimeNavigation?.DateTimePlanRegist;
+                    dt_fact.Value = temp.IdTimeNavigation?.DateTimeFactRegist;
+                    dt_arrive.Value = temp.IdTimeNavigation?.DateTimeArrive;
+                    dt_load.Value = temp.IdTimeNavigation?.DateTimeLoad;
+                    dt_endload.Value = temp.IdTimeNavigation?.DateTimeEndLoad;
+                    dt_left.Value = temp.IdTimeNavigation?.DateTimeLeft;
 
-                    tb_numrealese.Text = shipment.NumRealese;
-                    tb_packetdoc.Text = shipment.PacketDocuments;
-                    tb_tochkaload.Text = shipment.TochkaLoad;
+                    tb_numrealese.Text = temp.NumRealese;
+                    tb_packetdoc.Text = temp.PacketDocuments;
+                    tb_tochkaload.Text = temp.TochkaLoad;
 
-                    tb_CountPodons.Text = shipment.CountPodons;
-                    tb_nomencluture.Text = shipment.Nomenclature;
-                    tb_size.Text = shipment.Size;
-                    tb_Destination.Text = shipment.Destination;
-                    tb_typeload.Text = shipment.TypeLoad;
-                    tb_descript.Text = shipment.Description;
-                    tb_storekeeper.Text = shipment.StoreKeeper;
+
+                    tb_CountPodons.Text = temp.CountPodons;
+                    tb_nomencluture.Text = temp.Nomenclature;
+                    tb_size.Text = temp.Size;
+                    tb_Destination.Text = temp.Destination;
+                    tb_typeload.Text = temp.TypeLoad;
+                    tb_descript.Text = temp.Description;
+                    tb_storekeeper.Text = temp.StoreKeeper;
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            catch (Exception ex) { MessageBox.Show(ex.ToString(), "Программное исключене", MessageBoxButton.OK, MessageBoxImage.Error); }
 
             if (dt_plan.Value != null)
             {
-                text_title.Text = $"Отгрузка №{id} от {dt_plan.Value}";
+                text_title.Text = "Отгрузка №" + id + " от " + dt_plan.Value;
             }
             else
             {
-                text_title.Text = $"Отгрузка №{id}";
+                text_title.Text = "Отгрузка №" + id;
             }
         }
 
@@ -397,23 +382,23 @@ namespace Registrant.Forms
                                 {
                                     shipment.IdTimeNavigation.DateTimeLeft = dt_left.Value;
                                 }
-                                if (tb_numrealese.Text != null)
+                                if (string.IsNullOrWhiteSpace(tb_numrealese.Text))
                                 {
                                     shipment.NumRealese = tb_numrealese.Text;
                                 }
-                                if (tb_packetdoc.Text != null)
+                                if (string.IsNullOrWhiteSpace(tb_packetdoc.Text))
                                 {
                                     shipment.PacketDocuments = tb_packetdoc.Text;
                                 }
-                                if (tb_typeload.Text != null)
+                                if (string.IsNullOrWhiteSpace(tb_typeload.Text))
                                 {
                                     shipment.TypeLoad = tb_typeload.Text;
                                 }
-                                if (tb_tochkaload.Text != null)
+                                if (string.IsNullOrWhiteSpace(tb_tochkaload.Text))
                                 {
                                     shipment.TochkaLoad = tb_tochkaload.Text;
                                 }
-                                if (tb_descript.Text != null)
+                                if (string.IsNullOrWhiteSpace(tb_descript.Text))
                                 {
                                     shipment.Description = tb_descript.Text;
                                 }
@@ -453,7 +438,6 @@ namespace Registrant.Forms
                         {
                             shipment.IdTimeNavigation.DateTimeLoad = dt_load.Value;
                         }
-
                         if (dt_endload.Value != null)
                         {
                             shipment.IdTimeNavigation.DateTimeEndLoad = dt_endload.Value;
@@ -462,28 +446,23 @@ namespace Registrant.Forms
                         {
                             shipment.CountPodons = tb_CountPodons.Text;
                         }
-                            
-                        if (!string.IsNullOrWhiteSpace(tb_nomencluture.Text))
+                        if (tb_nomencluture.Text != null)
                         {
                             shipment.Nomenclature = tb_nomencluture.Text;
                         }
-                            
-                        if (!string.IsNullOrWhiteSpace(tb_size.Text))
+                        if (tb_size.Text != null)
                         {
                             shipment.Size = tb_size.Text;
                         }
-                            
-                        if (!string.IsNullOrWhiteSpace(tb_Destination.Text))
+                        if (tb_Destination.Text != null)
                         {
                             shipment.Destination = tb_Destination.Text;
                         }
-                            
-                        if (!string.IsNullOrWhiteSpace(tb_typeload.Text))
+                        if (tb_typeload.Text != null)
                         {
                             shipment.TypeLoad = tb_typeload.Text;
                         }
-                            
-                        if (!string.IsNullOrWhiteSpace(tb_descript.Text))
+                        if (tb_descript.Text != null)
                         {
                             shipment.Description = tb_descript.Text;
                         }
@@ -499,8 +478,9 @@ namespace Registrant.Forms
                         //shipment.StoreKeeper = App.ActiveUser;
                         shipment.ServiceInfo = shipment.ServiceInfo + "\n" + DateTime.Now + " " + App.ActiveUser + " внес изменения в отгрузку";
                         ef.SaveChanges();
+                        Close();
+
                     }
-                    Close();
                 }
                 catch (Exception ex)
                 {
@@ -664,10 +644,7 @@ namespace Registrant.Forms
         {
             try
             {
-                using RegistrantCoreContext ef = new RegistrantCoreContext();
-                Shipment shipment = new Shipment();
-
-                if (cb_drivers.SelectedItem != null)
+                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
                 {
                     var temp = ef.Shipments.FirstOrDefault(x => x.IdShipment == Convert.ToInt64(idcont.Text));
                     temp.Active = "0";

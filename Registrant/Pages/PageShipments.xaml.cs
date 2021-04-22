@@ -149,7 +149,7 @@ namespace Registrant.Pages
 
             if (current != null)
             {
-                MessageBoxResult? result = ModernWpf.MessageBox.Show("Сменить статус водителя " + current.Fio + " на Загрузка начата?", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                MessageBoxResult? result = MessageBox.Show("Сменить статус водителя " + current.Fio + " на Загрузка начата?", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
                 {
 
@@ -179,7 +179,7 @@ namespace Registrant.Pages
 
             if (current != null)
             {
-                MessageBoxResult? result = ModernWpf.MessageBox.Show(
+                MessageBoxResult result = MessageBox.Show(
                     "Сменить статус водителя " + current.Fio + " на Загрузка окончена?", "Внимание",
                     MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (result == MessageBoxResult.Yes)
@@ -229,7 +229,7 @@ namespace Registrant.Pages
             }
             else
             {
-                MessageBoxResult? result = ModernWpf.MessageBox.Show("Открыть окно вид для сбыта?", "Внимание",
+                MessageBoxResult? result = MessageBox.Show("Открыть окно вид для сбыта?", "Внимание",
                     MessageBoxButton.YesNo, MessageBoxImage.Asterisk);
                 if (result == MessageBoxResult.Yes)
                 {

@@ -72,7 +72,7 @@ namespace Registrant.Forms
                 {
                     Controllers.DriversController driver = new Controllers.DriversController();
 
-                    cb_drivers.ItemsSource = driver.GetDriversСurrent();
+                    cb_drivers.ItemsSource = driver.GetDriversCurrent();
 
                 }
             }
@@ -127,7 +127,7 @@ namespace Registrant.Forms
 
                     Controllers.DriversController driver = new Controllers.DriversController();
 
-                    cb_drivers.ItemsSource = driver.GetDriversСurrent((int)temp.IdDriver);
+                    cb_drivers.ItemsSource = driver.GetDriversCurrent((int)temp.IdDriver);
                     cb_drivers.SelectedItem = driver.Driver.FirstOrDefault(x => x.IdDriver == temp.IdDriver);
 
                     //ЗАПРЕТ НА РЕДАКТИРОВАНИЕ ЕСЛИ НАЧАЛАСЬ ЗАГРУЗКА

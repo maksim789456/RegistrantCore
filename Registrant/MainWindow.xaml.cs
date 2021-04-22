@@ -8,18 +8,19 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Registrant.DB;
+using Registrant.Pages;
 
 namespace Registrant
 {
     public partial class MainWindow 
     {
         //Чтобы потом обратится при нажатие на кнопку
-        private Pages.PageContragents _pageContragents;
-        private Pages.PageKPP _pageKpp;
-        private Pages.PageDrivers _pageDrivers;
-        private Pages.PageShipments _pageShipments;
-        private Pages.PageUser _pageUser;
-        private Pages.PageAdmin _pageAdmin;
+        private PageContragents _pageContragents;
+        private PageKPP _pageKpp;
+        private PageDrivers _pageDrivers;
+        private PageShipments _pageShipments;
+        private PageUser _pageUser;
+        private PageAdmin _pageAdmin;
 
         public MainWindow()
         {
@@ -60,66 +61,63 @@ namespace Registrant
         {
             switch (App.LevelAccess)
             {
-                Dispatcher.Invoke(() => nav_admin.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => nav_contragents.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => nav_jurnalkpp.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
+                case "admin":
+                    Dispatcher.Invoke(() => nav_admin.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => nav_contragents.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => nav_jurnalkpp.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
 
-                //Иниципализация нужных страниц под ролей
-                Dispatcher.Invoke(() => pageKPP = new Pages.PageKPP());
-                Dispatcher.Invoke(() => pageContragents = new Pages.PageContragents());
-                Dispatcher.Invoke(() => pageDrivers = new Pages.PageDrivers());
-                Dispatcher.Invoke(() => pageShipments = new Pages.PageShipments());
-                Dispatcher.Invoke(() => pageAdmin = new Pages.PageAdmin());
+                    //Иниципализация нужных страниц под ролей
+                    Dispatcher.Invoke(() => _pageKpp = new PageKPP());
+                    Dispatcher.Invoke(() => _pageContragents = new PageContragents());
+                    Dispatcher.Invoke(() => _pageDrivers = new PageDrivers());
+                    Dispatcher.Invoke(() => _pageShipments = new PageShipments());
+                    Dispatcher.Invoke(() => _pageAdmin = new PageAdmin());
 
-                Dispatcher.Invoke(() => FrameContent.Content = pageShipments);
-            }
-            else if (App.LevelAccess == "reader")
-            {
-                Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => FrameContent.Content = _pageShipments);
+                    break;
+                case "reader":
+                    Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
 
-                Dispatcher.Invoke(() => pageDrivers = new Pages.PageDrivers());
-                Dispatcher.Invoke(() => pageShipments = new Pages.PageShipments());
+                    Dispatcher.Invoke(() => _pageDrivers = new PageDrivers());
+                    Dispatcher.Invoke(() => _pageShipments = new PageShipments());
 
-                Dispatcher.Invoke(() => FrameContent.Content = pageShipments);
-            }
-            else if (App.LevelAccess == "warehouse")
-            {
-                Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => FrameContent.Content = _pageShipments);
+                    break;
+                case "warehouse":
+                    Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
 
-                Dispatcher.Invoke(() => pageContragents = new Pages.PageContragents());
-                Dispatcher.Invoke(() =>  pageDrivers = new Pages.PageDrivers());
-                Dispatcher.Invoke(() => pageShipments = new Pages.PageShipments());
+                    Dispatcher.Invoke(() => _pageContragents = new PageContragents());
+                    Dispatcher.Invoke(() =>  _pageDrivers = new PageDrivers());
+                    Dispatcher.Invoke(() => _pageShipments = new PageShipments());
 
-                Dispatcher.Invoke(() => FrameContent.Content = pageShipments);
+                    Dispatcher.Invoke(() => FrameContent.Content = _pageShipments);
+                    break;
+                case "shipment":
+                    Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => nav_contragents.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
 
-            }
-            else if (App.LevelAccess == "shipment")
-            {
-                Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => nav_contragents.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => _pageContragents = new PageContragents());
+                    Dispatcher.Invoke(() => _pageDrivers = new PageDrivers());
+                    Dispatcher.Invoke(() => _pageShipments = new PageShipments());
 
-                Dispatcher.Invoke(() => pageContragents = new Pages.PageContragents());
-                Dispatcher.Invoke(() => pageDrivers = new Pages.PageDrivers());
-                Dispatcher.Invoke(() => pageShipments = new Pages.PageShipments());
+                    Dispatcher.Invoke(() => FrameContent.Content = _pageShipments);
+                    break;
+                case "kpp":
+                    Dispatcher.Invoke(() => nav_jurnalkpp.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => _pageKpp = new PageKPP());
 
-                Dispatcher.Invoke(() => FrameContent.Content = pageShipments);
-            }
-            else if (App.LevelAccess == "kpp")
-            {
-                Dispatcher.Invoke(() => nav_jurnalkpp.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => pageKPP = new Pages.PageKPP());
-
-                Dispatcher.Invoke(() => FrameContent.Content = pageKPP);
+                    Dispatcher.Invoke(() => FrameContent.Content = _pageKpp);
+                    break;
             }
         }
 
@@ -130,23 +128,21 @@ namespace Registrant
             WebClient web = new WebClient();
             try
             {
-                string act = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualVer.txt");
-                string actualText = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualTextDesc.txt");
-                act = act.Replace("\n", "");
-                act = act.Replace(".", ",");
+                string actualVersionText = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualVer.txt");
+                actualVersionText = actualVersionText.Replace("\n", "").Replace(".", ",");
+                string actualDescription = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualTextDesc.txt");
 
-                string currentstring = Settings.App.Default.AppVersion;
-                currentstring = currentstring.Replace(".", ",");
-                decimal Current = decimal.Parse(currentstring);
-                decimal Actual = decimal.Parse(Act);
+                string appVersion = Settings.App.Default.AppVersion.Replace(".", ",");
+                decimal currentVersion = decimal.Parse(appVersion);
+                decimal actualVersion = decimal.Parse(actualVersionText);
                 Dispatcher.Invoke(() => ContentCheckingUpdate.Hide());
 
-                if (actual > current)
+                if (actualVersion > currentVersion)
                 {
                     Dispatcher.Invoke(() => ContentUpdate.ShowAsync());
-                    Dispatcher.Invoke(() => txt_currver.Text = current.ToString(CultureInfo.CurrentCulture));
-                    Dispatcher.Invoke(() => txt_newver.Text = act);
-                    Dispatcher.Invoke(() => txt_desc.Text = actualText);
+                    Dispatcher.Invoke(() => txt_currver.Text = currentVersion.ToString(CultureInfo.CurrentCulture));
+                    Dispatcher.Invoke(() => txt_newver.Text = actualVersionText);
+                    Dispatcher.Invoke(() => txt_desc.Text = actualDescription);
 
                     string canRefuse = web.DownloadString("https://raw.githubusercontent.com/TheCrazyWolf/RegistrantCore/master/Registrant/ActualVerCanRefuse.txt");
                     canRefuse = canRefuse.Replace("\n", "");
@@ -169,7 +165,6 @@ namespace Registrant
                 TestConnect();
             }
         }
-
 
         /// Открытие дебага
         private void btn_debug_Click(object sender, RoutedEventArgs e)
@@ -200,29 +195,24 @@ namespace Registrant
 
             try
             {
-                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                using RegistrantCoreContext ef = new RegistrantCoreContext();
+                var user = ef.Users.FirstOrDefault(x => tb_login.Text == x.Login && tb_password.Password == x.Password);
+
+                if (user != null)
                 {
+                    ContentAuth.Hide();
+                    App.SetActiveUser(user.Name);
+                    App.SetLevelAccess(user.LevelAccess);
+                    NavUI.PaneTitle = "РЕГИСТРАНТ (" + user.Name + ")";
+                    nav_userset.Content = user.Name;
+                    _pageUser = new PageUser(user.IdUser);
 
-                    var user = ef.Users.Where(x => tb_login.Text == x.Login && tb_password.Password == x.Password).FirstOrDefault();
-
-                    if (user != null)
-                    {
-                        ContentAuth.Hide();
-                        App.SetActiveUser(user.Name);
-                        App.SetLevelAccess(user.LevelAccess);
-                        NavUI.PaneTitle = "РЕГИСТРАНТ (" + user.Name + ")";
-                        nav_userset.Content = user.Name;
-                        pageUser = new Pages.PageUser(user.IdUser);
-
-
-                        Thread thread = new Thread(Verify);
-                        thread.Start();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Логин и/или пароль неверный", "Ошибка входа", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-
+                    Thread thread = new Thread(Verify);
+                    thread.Start();
+                }
+                else
+                {
+                    MessageBox.Show("Логин и/или пароль неверный", "Ошибка входа", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)

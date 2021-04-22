@@ -233,25 +233,15 @@ namespace Registrant.Pages
                     driver.Patronymic = tb_patronomyc.Text;
                     driver.Phone = tb_phone.Text;
 
-                    if (tb_contragent.SelectedItem != null)
-                    {
-                        var driver = ef.Drivers.FirstOrDefault(x => x.IdDriver == Convert.ToInt64(tb_id.Text));
-                        driver.Family = tb_Family.Text;
-                        driver.Name = tb_name.Text;
-                        driver.Patronymic = tb_patronomyc.Text;
-                        driver.Phone = tb_phone.Text;
-
-                        driver.Attorney = tb_attorney.Text;
-                        driver.Auto = tb_auto.Text;
-                        driver.AutoNumber = tb_autonum.Text;
-                        driver.Passport = tb_passport.Text;
-                        driver.Info = tb_info.Text;
-                        driver.ServiceInfo = driver.ServiceInfo + "\n" + DateTime.Now + " " + App.ActiveUser + " внес изменения";
-                        ef.SaveChanges();
-                        btn_close_Click(sender, e);
-                        ContentAddEdit.Hide();
-                        //btn_refresh_Click(sender, e);
-                    }
+                    driver.Attorney = tb_attorney.Text;
+                    driver.Auto = tb_auto.Text;
+                    driver.AutoNumber = tb_autonum.Text;
+                    driver.Passport = tb_passport.Text;
+                    driver.Info = tb_info.Text;
+                    driver.ServiceInfo = driver.ServiceInfo + "\n" + DateTime.Now + " " + App.ActiveUser + " внес изменения";
+                    ef.SaveChanges();
+                    btn_close_Click(sender, e);
+                    ContentAddEdit.Hide();
                 }
 
                 ef.SaveChanges();
