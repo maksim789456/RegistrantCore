@@ -71,6 +71,7 @@ namespace Registrant.Forms
                         AutoNumber = tb_autonum.Text,
                         Attorney = tb_attorney.Text,
                         Phone = tb_phone.Text,
+                        Auto = tb_auto.Text,
                         Active = "1",
                         ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил водителя"
                     };
@@ -179,6 +180,8 @@ namespace Registrant.Forms
             {
                 tb_phone.Text = "";
                 tb_autonum.Text = "";
+                tb_auto.Text = "";
+                tb_attorney.Text = "";
                 return;
             }
 
@@ -192,6 +195,7 @@ namespace Registrant.Forms
                     tb_phone.Text = driver.Phone;
                     tb_autonum.Text = driver.AutoNumber;
                     tb_attorney.Text = driver.Attorney;
+                    tb_auto.Text = driver.Auto;
                 }
             }
             catch (Exception ex)
@@ -350,6 +354,11 @@ namespace Registrant.Forms
                     {
                         var current = cb_drivers.SelectedItem as Drivers;
                         shipment.IdDriver = current?.IdDriver;
+                        
+                        shipment.IdDriverNavigation.Phone = tb_phone.Text;
+                        shipment.IdDriverNavigation.Attorney = tb_attorney.Text;
+                        shipment.IdDriverNavigation.Auto = tb_auto.Text;
+                        shipment.IdDriverNavigation.AutoNumber = tb_autonum.Text;
                     }
                     else
                     {
@@ -363,6 +372,7 @@ namespace Registrant.Forms
                             AutoNumber = tb_autonum.Text,
                             Attorney = tb_attorney.Text,
                             Phone = tb_phone.Text,
+                            Auto = tb_auto.Text,
                             Active = "1",
                             ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил водителя"
                         };
@@ -540,6 +550,11 @@ namespace Registrant.Forms
                     {
                         var current = cb_drivers.SelectedItem as Drivers;
                         shipment.IdDriver = current?.IdDriver;
+                        
+                        shipment.IdDriverNavigation.Phone = tb_phone.Text;
+                        shipment.IdDriverNavigation.Attorney = tb_attorney.Text;
+                        shipment.IdDriverNavigation.Auto = tb_auto.Text;
+                        shipment.IdDriverNavigation.AutoNumber = tb_autonum.Text;
                     }
                     else
                     {
@@ -553,6 +568,7 @@ namespace Registrant.Forms
                             AutoNumber = tb_autonum.Text,
                             Attorney = tb_attorney.Text,
                             Phone = tb_phone.Text,
+                            Auto = tb_auto.Text,
                             Active = "1",
                             ServiceInfo = DateTime.Now + " " + App.ActiveUser + " добавил водителя"
                         };
