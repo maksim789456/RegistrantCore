@@ -10,7 +10,6 @@ using System.Windows.Media;
 using Registrant.DB;
 using Registrant.Pages;
 
-
 namespace Registrant
 {
     public partial class MainWindow 
@@ -62,86 +61,77 @@ namespace Registrant
         {
             switch (App.LevelAccess)
             {
-                Dispatcher.Invoke(() => pageAdmin = new Pages.PageAdmin());
-                Dispatcher.Invoke(() => nav_admin.Visibility = Visibility.Visible);
+                case "admin":
+                    Dispatcher.Invoke(() => _pageAdmin = new PageAdmin());
+                    Dispatcher.Invoke(() => nav_admin.Visibility = Visibility.Visible);
 
-                Dispatcher.Invoke(() => pageContragents = new Pages.PageContragents());
-                Dispatcher.Invoke(() => nav_contragents.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => _pageContragents = new PageContragents());
+                    Dispatcher.Invoke(() => nav_contragents.Visibility = Visibility.Visible);
 
-                Dispatcher.Invoke(() => pageDrivers = new Pages.PageDrivers());
-                Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => _pageDrivers = new PageDrivers());
+                    Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
 
-                Dispatcher.Invoke(() => pageKPP = new Pages.PageKPP());
-                Dispatcher.Invoke(() => nav_jurnalkpp.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => _pageKpp = new PageKPP());
+                    Dispatcher.Invoke(() => nav_jurnalkpp.Visibility = Visibility.Visible);
 
-                Dispatcher.Invoke(() => pageShipments = new Pages.PageShipments());
-                Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => _pageShipments = new PageShipments());
+                    Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
 
-                Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
 
-                Dispatcher.Invoke(() => FrameContent.Content = pageShipments);
-            }
-            else if (App.LevelAccess == "reader")
-            {
-                Dispatcher.Invoke(() => pageDrivers = new Pages.PageDrivers());
-                Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => FrameContent.Content = _pageShipments);
+                    break;
+                case "reader":
+                    Dispatcher.Invoke(() => _pageDrivers = new PageDrivers());
+                    Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
 
-                Dispatcher.Invoke(() => pageShipments = new Pages.PageShipments());
-                Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => _pageShipments = new PageShipments());
+                    Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
 
-                Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
 
-                Dispatcher.Invoke(() => FrameContent.Content = pageShipments);
-            }
-            else if (App.LevelAccess == "warehouse")
-            {
-                Dispatcher.Invoke(() => pageDrivers = new Pages.PageDrivers());
-                Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => FrameContent.Content = _pageShipments);
+                    break;
+                case "warehouse":
+                    Dispatcher.Invoke(() => _pageDrivers = new PageDrivers());
+                    Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
 
-                Dispatcher.Invoke(() => pageShipments = new Pages.PageShipments());
-                Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => _pageShipments = new PageShipments());
+                    Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
 
-                Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
 
-                //Dispatcher.Invoke(() => pageContragents = new Pages.PageContragents());
+                    //Dispatcher.Invoke(() => pageContragents = new Pages.PageContragents());
 
                     Dispatcher.Invoke(() => FrameContent.Content = _pageShipments);
                     break;
                 case "shipment":
+                    Dispatcher.Invoke(() => _pageShipments = new PageShipments());
                     Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
+
+                    Dispatcher.Invoke(() => _pageContragents = new PageContragents());
                     Dispatcher.Invoke(() => nav_contragents.Visibility = Visibility.Visible);
+
+                    Dispatcher.Invoke(() => _pageDrivers = new PageDrivers());
                     Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
+
+                    Dispatcher.Invoke(() => _pageKpp = new PageKPP());
+                    Dispatcher.Invoke(() => nav_jurnalkpp.Visibility = Visibility.Visible);
+
                     Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => FrameContent.Content = _pageShipments);
+                    break;
+                case "kpp":
+                    Dispatcher.Invoke(() => nav_jurnalkpp.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => _pageKpp = new PageKPP());
 
-            }
-            else if (App.LevelAccess == "shipment")
-            {
-                Dispatcher.Invoke(() => pageShipments = new Pages.PageShipments());
-                Dispatcher.Invoke(() => nav_jurnalshipment.Visibility = Visibility.Visible);
-
-                Dispatcher.Invoke(() => pageContragents = new Pages.PageContragents());
-                Dispatcher.Invoke(() => nav_contragents.Visibility = Visibility.Visible);
-
-                Dispatcher.Invoke(() => pageDrivers = new Pages.PageDrivers());
-                Dispatcher.Invoke(() => nav_drivers.Visibility = Visibility.Visible);
-
-                Dispatcher.Invoke(() => pageKPP = new Pages.PageKPP());
-                Dispatcher.Invoke(() => nav_jurnalkpp.Visibility = Visibility.Visible);
-
-                Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => FrameContent.Content = pageShipments);
-            }
-            else if (App.LevelAccess == "kpp")
-            {
-                Dispatcher.Invoke(() => nav_jurnalkpp.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => pageKPP = new Pages.PageKPP());
-
-                Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
-                Dispatcher.Invoke(() => FrameContent.Content = pageKPP);
-            }
-            else
-            {
-                MessageBox.Show("К такому меня жизнь не готовила, авторизация прошла, а вот не смогли удостоверится кем вы являетесь по роли. Обратитесь к сис админму");
+                    Dispatcher.Invoke(() => nav_userset.Visibility = Visibility.Visible);
+                    Dispatcher.Invoke(() => FrameContent.Content = _pageKpp);
+                    break;
+                default:
+                    MessageBox.Show("К такому меня жизнь не готовила, авторизация прошла, " +
+                                    "а вот не смогли удостоверится кем вы являетесь по роли. Обратитесь к сис админму");
+                    break;
             }
         }
 
