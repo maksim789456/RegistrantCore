@@ -15,7 +15,8 @@ namespace Registrant.Controllers
             PlanShipments = new List<PrintShipments>();
         }
 
-        public List<PrintShipments> GetShipmentsDate(DateTime date)
+        //Получит список для печати СБЫТ
+        public List<Models.PrintShipments> GetShipmentsDate(DateTime date)
         {
             PlanShipments.Clear();
 
@@ -28,8 +29,16 @@ namespace Registrant.Controllers
                         .OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
                 foreach (var item in shipments)
                 {
-                    PrintShipments shipment = new PrintShipments(item);
-                    PlanShipments.Add(shipment);
+                    //var temp = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date);  на это выбивает null
+                    //var temp = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.HasValue ? x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date : false || x.IdTimeNavigation.DateTimeFactRegist.HasValue ? x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date : false);
+                    //var temp = ef.Shipments.Where(x => ((x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date) && x.Active != "0")).OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
+                    var temp = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date).OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist).OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
+
+                    foreach (var item in temp)
+                    {
+                        Models.PrintShipments shipment = new Models.PrintShipments(item);
+                        PlanShipments.Add(shipment);
+                    }
                 }
             }
             catch (Exception ex)
@@ -43,6 +52,37 @@ namespace Registrant.Controllers
             }
             return PlanShipments;
         }
+
+        //Получит список для печати СКЛАД
+        public List<Models.PrintShipments> GetShipmentsDateSklad(DateTime date)
+        {
+            PlanShipments.Clear();
+
+            date = date.Date;
+            try
+            {
+                using (DB.RegistrantCoreContext ef = new DB.RegistrantCoreContext())
+                {
+                    //var temp = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date);  на это выбивает null
+                    //var temp = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.HasValue ? x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date : false || x.IdTimeNavigation.DateTimeFactRegist.HasValue ? x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date : false);
+                    //var temp = ef.Shipments.Where(x => ((x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date) && x.Active != "0")).OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist);
+                    var temp = ef.Shipments.Where(x => x.IdTimeNavigation.DateTimePlanRegist.Value.Date == date || x.IdTimeNavigation.DateTimeFactRegist.Value.Date == date).OrderBy(x => x.IdTimeNavigation.DateTimePlanRegist).OrderBy(x => x.IdTimeNavigation.DateTimeFactRegist);
+
+                    foreach (var item in temp)
+                    {
+                        Models.PrintShipments shipment = new Models.PrintShipments(item);
+                        PlanShipments.Add(shipment);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ((MainWindow)System.Windows.Application.Current.MainWindow).ContentErrorText.ShowAsync();
+                ((MainWindow)System.Windows.Application.Current.MainWindow).text_debuger.Text = ex.ToString();
+            }
+            return PlanShipments;
+        }
+
 
        public List<PrintShipments> GetShipmentsMonth(DateTime date)
         {

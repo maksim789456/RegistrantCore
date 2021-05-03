@@ -19,8 +19,8 @@ namespace Registrant.Forms
         private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             grid_shipments.ItemsSource = null;
-            if (DatePicker.SelectedDate != null)
-                grid_shipments.ItemsSource = controller.GetShipmentsDate(DatePicker.SelectedDate.Value);
+            grid_shipments.ItemsSource = controller.GetShipmentsDateSklad(DatePicker.SelectedDate.Value);
+            
         }
 
         private void btn_month_Click(object sender, RoutedEventArgs e)

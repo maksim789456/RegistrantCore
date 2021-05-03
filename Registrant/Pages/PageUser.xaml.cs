@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using Registrant.DB;
 
+
 namespace Registrant.Pages
 {
     public partial class PageUser

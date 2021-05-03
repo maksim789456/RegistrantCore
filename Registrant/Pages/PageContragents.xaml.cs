@@ -28,6 +28,7 @@ namespace Registrant.Pages
                 Thread.Sleep(Settings.App.Default.RefreshContent);
                 try
                 {
+                        var temp = ef.Contragents.Where(x => x.Active != "0").OrderBy(x => x.Name).ToList();
                     using RegistrantCoreContext ef = new RegistrantCoreContext();
                     var contragents = ef.Contragents.Where(x => x.Active != "0")
                         .OrderByDescending(x => x.IdContragent).ToList();

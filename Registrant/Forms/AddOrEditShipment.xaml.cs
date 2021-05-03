@@ -258,7 +258,15 @@ namespace Registrant.Forms
                 case "admin":
                     break;
             }
-
+            else if (App.LevelAccess == "admin")
+            {
+            }
+            else if (App.LevelAccess == "reader")
+            {
+                btn_edit.Visibility = Visibility.Collapsed;
+                btn_add.Visibility = Visibility.Collapsed;
+                btn_delete.Visibility = Visibility.Collapsed; 
+            }
             try
             {
                 using RegistrantCoreContext ef = new RegistrantCoreContext();

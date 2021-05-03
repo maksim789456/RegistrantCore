@@ -26,6 +26,7 @@ namespace Registrant.Controllers
 
                 foreach (var item in drivers)
                 {
+                    var temp = ef.Drivers.Where(x => x.Active != "0").OrderBy(x => x.Family);
                     Drivers driver = new Drivers(item);
                     Driver.Add(driver);
                 }

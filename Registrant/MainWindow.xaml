@@ -8,6 +8,7 @@
         xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
         mc:Ignorable="d"
         ExtendViewIntoTitleBar="True"
+        fw:AcrylicWindow.TintOpacity="0"
         Title="Регистрант" Height="720" Width="1280" Closed="AcrylicWindow_Closed" WindowStartupLocation="CenterScreen" WindowState="Maximized"
         Icon="img/ico_app.ico">
         <!--ExtendViewIntoTitleBar="True"!-->
@@ -16,6 +17,7 @@
         <ui:NavigationView x:Name="NavUI" 
         IsSettingsVisible="False"
         IsBackButtonVisible="Auto"
+        
         PaneTitle="РЕГИСТРАНТ"
         PaneDisplayMode="Auto" >
             <ui:NavigationView.MenuItems>
@@ -200,11 +202,11 @@
             </Grid>
         </ui:ContentDialog>
 
-        <ui:ContentDialog Visibility="Hidden" x:Name="ContentInstallUpdates">
+        <ui:ContentDialog Visibility="Visible" x:Name="ContentInstallUpdates">
             <ui:ContentDialog.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="White" Offset="0.58"/>
-                    <GradientStop Color="#FF2EC1EC" Offset="0"/>
+                    <GradientStop Color="#FFFF9292" Offset="0"/>
                 </LinearGradientBrush>
             </ui:ContentDialog.Background>
             <Grid>
